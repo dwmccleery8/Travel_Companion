@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.travelcompanion"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.travelcompanion"
@@ -74,6 +74,10 @@ dependencies {
 
     // live data
     implementation("androidx.compose.runtime:runtime-livedata:1.5.1")
+
+    // navigation
+    implementation("androidx.navigation:navigation-compose:2.4.2")
+
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
