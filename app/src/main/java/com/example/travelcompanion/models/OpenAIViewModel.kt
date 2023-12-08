@@ -23,7 +23,7 @@ sealed interface OpenAiState {
 @RequiresApi(Build.VERSION_CODES.O)
 class OpenAiVM : ViewModel() {
 
-    var tripType by mutableStateOf("Select type:")
+    var tripType by mutableStateOf("")
     var isOutside by mutableStateOf(false)
     var amountOfPeople by mutableIntStateOf(0)
     var returnDate: LocalDate by mutableStateOf(LocalDate.now())
@@ -47,6 +47,7 @@ class OpenAiVM : ViewModel() {
                 val prompts = "Could you provide a brief list of things that are commonly forgotten and advice on a $tripType roadtrip where the venue being traveled to is $isOutsideText\n" +
                         "and will contain $amountOfPeople people. This person will be leaving on $departDate and will be returning home on $returnDate.\n" +
                         "Other useful information about this trip includes: $otherUsefulInfo"
+
 
                 val response = OpenAiApi.getResponse(prompts)
 

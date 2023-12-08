@@ -17,7 +17,7 @@ interface OpenAiApiService {
 
     @Headers(
         "Content-Type: application/json",
-        "Authorization: Bearer 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"
+        "Authorization: Bearer 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"
     )
     @POST("v1/chat/completions")
     suspend fun getChatCompletions(@Body request: ChatRequest) : ChatResponse
@@ -31,8 +31,7 @@ object OpenAiApi{
         .readTimeout(50, TimeUnit.SECONDS).build()
 
     private val retrofit = Retrofit.Builder()
-        // .addConverterFactory(Json{ ignoreUnknownKeys = true}.asConverterFactory("application/json".toMediaType()))
-        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+        .addConverterFactory(Json{ ignoreUnknownKeys = true}.asConverterFactory("application/json".toMediaType()))
         .baseUrl("https://api.openai.com/")
         .client(httpClient)
         .build()
