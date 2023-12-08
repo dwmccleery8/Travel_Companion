@@ -1,0 +1,80 @@
+package com.example.travelcompanion.data
+
+import androidx.annotation.DrawableRes
+import com.example.travelcompanion.R
+
+
+data class WeatherIcon(
+    val iconID: String,
+    @DrawableRes val iconImage: Int
+)
+class Datasource() {
+    fun loadIcons(): List<WeatherIcon> {
+        return listOf<WeatherIcon>(
+            WeatherIcon("a01d", R.drawable.a01d),
+            WeatherIcon("a01n", R.drawable.a01n),
+            WeatherIcon("a02d", R.drawable.a02d),
+            WeatherIcon("a02n", R.drawable.a02n),
+            WeatherIcon("a03d", R.drawable.a03d),
+            WeatherIcon("a03n", R.drawable.a03n),
+            WeatherIcon("a04d", R.drawable.a04d),
+            WeatherIcon("a04n", R.drawable.a04n),
+            WeatherIcon("a05d", R.drawable.a05d),
+            WeatherIcon("a05n", R.drawable.a05n),
+            WeatherIcon("a06d", R.drawable.a06d),
+            WeatherIcon("a06n", R.drawable.a06n),
+            WeatherIcon("c01d", R.drawable.c01d),
+            WeatherIcon("c01n", R.drawable.c01n),
+            WeatherIcon("c02d", R.drawable.c02d),
+            WeatherIcon("c02n", R.drawable.c02n),
+            WeatherIcon("c03d", R.drawable.c03d),
+            WeatherIcon("c03n", R.drawable.c03n),
+            WeatherIcon("c04d", R.drawable.c04d),
+            WeatherIcon("c04n", R.drawable.c04n),
+            WeatherIcon("d01d", R.drawable.d01d),
+            WeatherIcon("d01n", R.drawable.d01n),
+            WeatherIcon("d02d", R.drawable.d02d),
+            WeatherIcon("d02n", R.drawable.d02n),
+            WeatherIcon("d03d", R.drawable.d03d),
+            WeatherIcon("d03n", R.drawable.d03n),
+            WeatherIcon("f01d", R.drawable.f01d),
+            WeatherIcon("f01n", R.drawable.f01n),
+            WeatherIcon("r01d", R.drawable.r01d),
+            WeatherIcon("r01n", R.drawable.r01n),
+            WeatherIcon("r02d", R.drawable.r02d),
+            WeatherIcon("r02n", R.drawable.r02n),
+            WeatherIcon("r03d", R.drawable.r03d),
+            WeatherIcon("r03n", R.drawable.r03n),
+            WeatherIcon("r04d", R.drawable.r04d),
+            WeatherIcon("r04n", R.drawable.r04n),
+            WeatherIcon("r05d", R.drawable.r05d),
+            WeatherIcon("r05n", R.drawable.r05n),
+            WeatherIcon("r06d", R.drawable.r06d),
+            WeatherIcon("r06n", R.drawable.r06n),
+            WeatherIcon("s01d", R.drawable.s01d),
+            WeatherIcon("s01n", R.drawable.s01n),
+            WeatherIcon("s02d", R.drawable.s02d),
+            WeatherIcon("s02n", R.drawable.s02n),
+            WeatherIcon("s03d", R.drawable.s03d),
+            WeatherIcon("s03n", R.drawable.s03n),
+            WeatherIcon("s04d", R.drawable.s04d),
+            WeatherIcon("s04n", R.drawable.s04n),
+            WeatherIcon("s05d", R.drawable.s05d),
+            WeatherIcon("s05n", R.drawable.s05n),
+            WeatherIcon("s06d", R.drawable.s06d),
+            WeatherIcon("s06n", R.drawable.s06n),
+            WeatherIcon("t01d", R.drawable.t01d),
+            WeatherIcon("t01n", R.drawable.t01n),
+            WeatherIcon("t02d", R.drawable.t02d),
+            WeatherIcon("t02n", R.drawable.t02n),
+            WeatherIcon("t03d", R.drawable.t03d),
+            WeatherIcon("t03n", R.drawable.t03n),
+            WeatherIcon("t04d", R.drawable.t04d),
+            WeatherIcon("t04n", R.drawable.t04n),
+            WeatherIcon("t05d", R.drawable.t05d),
+            WeatherIcon("t05n", R.drawable.t05n),
+            WeatherIcon("u00d", R.drawable.u00d),
+            WeatherIcon("u00n", R.drawable.u00n),
+        )
+    }
+}

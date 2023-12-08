@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travelcompanion.R
-import com.example.travelcompanion.viewmodels.OpenAiState
-import com.example.travelcompanion.viewmodels.OpenAiVM
+import com.example.travelcompanion.models.OpenAiState
+import com.example.travelcompanion.models.OpenAiVM
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection

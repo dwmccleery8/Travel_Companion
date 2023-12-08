@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.travelcompanion.apis.WeatherAPI
+import com.example.travelcompanion.APIs.WeatherAPI
 import com.example.travelcompanion.WeatherService
 import kotlinx.coroutines.launch
 
