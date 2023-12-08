@@ -12,7 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.travelcompanion.screens.MapScreen
 import com.example.travelcompanion.screens.ResultsScreen
 import com.example.travelcompanion.screens.UserInfoScreen
-import com.example.travelcompanion.viewmodels.OpenAiVM
+import com.example.travelcompanion.models.OpenAiVM
 
 
 sealed class NavScreens(val route: String) {
