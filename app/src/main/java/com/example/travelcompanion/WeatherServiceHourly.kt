@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class WeatherService(
-    val data: List<WeatherDetails>,
+data class WeatherServiceHourly(
+    val data: List<WeatherDetailsHourly>,
     val city_name: String,
     val lon: Double,
     val timezone: String,
@@ -15,7 +15,7 @@ data class WeatherService(
 )
 
 @Serializable
-data class WeatherDetails(
+data class WeatherDetailsHourly(
     val timestamp_local: String,
     val timestamp_utc: String,
     val ts: Long,
@@ -35,7 +35,7 @@ data class WeatherDetails(
     val pres: Double,
     val dewpt: Double,
     val rh: Double,
-    val weather: WeatherInfo,
+    val weather: WeatherInfoHourly,
     val pod: String,
     val clouds_low: Int,
     val clouds_mid: Int,
@@ -51,7 +51,7 @@ data class WeatherDetails(
 )
 
 @Serializable
-data class WeatherInfo(
+data class WeatherInfoHourly(
     val icon: String,
     val description: String,
     val code: Int

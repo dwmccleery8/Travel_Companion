@@ -48,7 +48,6 @@ class OpenAiVM : ViewModel() {
                         "and will contain $amountOfPeople people. This person will be leaving on $departDate and will be returning home on $returnDate.\n" +
                         "Other useful information about this trip includes: $otherUsefulInfo"
 
-
                 val response = OpenAiApi.getResponse(prompts)
 
                 openAiState = OpenAiState.Success(summary = response)

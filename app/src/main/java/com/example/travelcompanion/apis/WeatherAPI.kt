@@ -1,6 +1,7 @@
-package com.example.travelcompanion.APIs
+package com.example.travelcompanion.apis
 
-import com.example.travelcompanion.WeatherService
+import com.example.travelcompanion.WeatherServiceDaily
+import com.example.travelcompanion.WeatherServiceHourly
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -10,12 +11,20 @@ import retrofit2.http.Query
 
 interface WeatherAPIService {
     @GET("/v2.0/forecast/hourly")
-    suspend fun getWeather(
+    suspend fun getWeatherHourly(
         @Query("lat") lat: Double = 0.0,
         @Query("lon") lon: Double = 0.0,
         @Query("key") key: String = "b7f245921cb448e3aef8c04a103ed0a8",
         @Query("units") units: String = "I"
-    ): WeatherService
+    ): WeatherServiceHourly
+
+    @GET("/v2.0/forecast/daily")
+    suspend fun getWeatherDaily(
+        @Query("lat") lat: Double = 0.0,
+        @Query("lon") lon: Double = 0.0,
+        @Query("key") key: String = "b7f245921cb448e3aef8c04a103ed0a8",
+        @Query("units") units: String = "I"
+    ): WeatherServiceDaily
 }
 
 

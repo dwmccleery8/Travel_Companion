@@ -5,12 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.travelcompanion.APIs.WeatherAPI
-import com.example.travelcompanion.WeatherService
+import com.example.travelcompanion.apis.WeatherAPI
+import com.example.travelcompanion.WeatherServiceDaily
+import com.example.travelcompanion.WeatherServiceHourly
 import kotlinx.coroutines.launch
 
 sealed interface WeatherUiState {
-    class Success(val weather: WeatherService) : WeatherUiState
+    class Success(val weatherHourly: WeatherServiceHourly, val weatherDaily: WeatherServiceDaily) : WeatherUiState
     object Error : WeatherUiState
     object Loading : WeatherUiState
 }
@@ -18,7 +19,6 @@ sealed interface WeatherUiState {
 class WeatherViewModel : ViewModel() {
 
     var weatherUIState: WeatherUiState by mutableStateOf(WeatherUiState.Loading)
-
 
     init {
         getWeatherData()
@@ -28,8 +28,9 @@ class WeatherViewModel : ViewModel() {
         viewModelScope.launch {
 
             try {
-                val weather = WeatherAPI.retrofitService.getWeather(lon = 70.0, lat = 70.0)
-                weatherUIState = WeatherUiState.Success(weather = weather)
+                val weatherHourly = WeatherAPI.retrofitService.getWeatherHourly(lon = -80.08037698997848, lat = 41.155372314696706)
+                val weatherDaily = WeatherAPI.retrofitService.getWeatherDaily(lon = -80.08037698997848, lat = 41.155372314696706)
+                weatherUIState = WeatherUiState.Success(weatherHourly = weatherHourly, weatherDaily = weatherDaily)
             } catch (e: Exception) {
                 println("IO Error ${e.message}")
                 weatherUIState = WeatherUiState.Error
@@ -38,5 +39,21 @@ class WeatherViewModel : ViewModel() {
     }
 }
 
+fun getBetterDate(date:String): String {
+    println(date)
+    var betterDate = ""
+    betterDate += if (date[5] == '0') {
+        "Jan "
+    }
+    else {
+        "Dec "
+    }
+    if (date[8] != '0') {
+        betterDate += date[8]
+    }
+    betterDate += date[9]
+
+    return betterDate
+}
 
 
