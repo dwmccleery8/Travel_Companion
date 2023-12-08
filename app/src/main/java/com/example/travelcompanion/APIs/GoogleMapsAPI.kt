@@ -1,2 +1,2 @@
-package com.example.travelcompanion.APIs
+package com.example.travelcompanion.apis
 

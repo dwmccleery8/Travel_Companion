@@ -1,8 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
-
 }
 
 android {
@@ -80,7 +78,7 @@ dependencies {
     // navigation
     implementation("androidx.navigation:navigation-compose:2.4.2")
 
-    // retrofit
+    // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
 
     // Retrofit with Kotlin serialization Converter
@@ -90,6 +88,20 @@ dependencies {
     // Kotlin serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // CORE
+    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.2.0")
+
+    // COLOR
+    implementation("com.maxkeppeler.sheets-compose-dialogs:color:1.2.0")
+
+    // CALENDAR
+    implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.2.0")
+
+    // STATE
+    implementation("com.maxkeppeler.sheets-compose-dialogs:state:1.2.0")
 
 
     testImplementation("junit:junit:4.13.2")

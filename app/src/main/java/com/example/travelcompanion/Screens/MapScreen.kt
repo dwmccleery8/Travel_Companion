@@ -1,4 +1,4 @@
-package com.example.travelcompanion.Screens
+package com.example.travelcompanion.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

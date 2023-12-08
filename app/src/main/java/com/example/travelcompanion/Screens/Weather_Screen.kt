@@ -1,4 +1,4 @@
-package com.example.travelcompanion.Screens
+package com.example.travelcompanion.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.travelcompanion.Models.WeatherUiState
-import com.example.travelcompanion.Models.WeatherViewModel
+import com.example.travelcompanion.models.WeatherUiState
+import com.example.travelcompanion.models.WeatherViewModel
 
 @Composable
 fun WeatherScreen(modifier: Modifier = Modifier) {

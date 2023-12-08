@@ -1,4 +1,4 @@
-package com.example.travelcompanion.APIs
+package com.example.travelcompanion.apis
 
 import com.example.travelcompanion.WeatherService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -11,8 +11,8 @@ import retrofit2.http.Query
 interface WeatherAPIService{
     @GET("/v2.0/current")
     suspend fun getWeather(@Query("lat") lat: Double = 0.0,
-                         @Query("lon") lon: Double = 0.0,
-                         @Query("key") key: String = "b7f245921cb448e3aef8c04a103ed0a8") : WeatherService
+                           @Query("lon") lon: Double = 0.0,
+                           @Query("key") key: String = "b7f245921cb448e3aef8c04a103ed0a8") : WeatherService
 }
 
 object WeatherAPI{
