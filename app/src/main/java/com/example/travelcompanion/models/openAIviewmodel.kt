@@ -33,6 +33,16 @@ class OpenAiVM : ViewModel() {
     var openAiState: OpenAiState by mutableStateOf(OpenAiState.Loading)
         private set
 
+    fun reset(){
+        tripType = "Select type:"
+        isOutside = false
+        amountOfPeople = 0
+        returnDate = LocalDate.now()
+        departDate = LocalDate.now()
+        otherUsefulInfo = ""
+        openAiState = OpenAiState.Loading
+    }
+
     fun getAnalysis(){
 
         viewModelScope.launch {
@@ -44,11 +54,17 @@ class OpenAiVM : ViewModel() {
             }
 
             try{
-                val prompts = "Could you provide a brief list of things that are commonly forgotten and advice on a $tripType roadtrip where the venue being traveled to is $isOutsideText\n" +
-                        "and will contain $amountOfPeople people. This person will be leaving on $departDate and will be returning home on $returnDate.\n" +
-                        "Other useful information about this trip includes: $otherUsefulInfo"
+                val promt = "Hey ChatGPT, right now, you are being queried through an API to respond" +
+                        " to user input and assist them in their planning of a road trip. " +
+                        "Your task is to provide a brief, compressed list (in bullet point format with ONLY 10 bullet points) " +
+                        "of travel essentials and items that are commonly forgotten on a $tripType road trip. " +
+                        "The venue being traveled to is mainly $isOutsideText and there will be $amountOfPeople people there. " +
+                        "This person will be leaving on $departDate and will be returning home on $returnDate. " +
+                        "This road trip will take 5 hours and it will be 32 degrees outside and sunny on arrival " +
+                        "at the venue and 42 degrees outside and raining when the user returns. Other useful " +
+                        "information about this trip inputted by the user includes:  \"$otherUsefulInfo\"."
 
-                val response = OpenAiApi.getResponse(prompts)
+                val response = OpenAiApi.getResponse(promt)
 
                 openAiState = OpenAiState.Success(summary = response)
 
