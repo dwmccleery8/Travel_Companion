@@ -54,7 +54,7 @@ class OpenAiVM : ViewModel() {
             }
 
             try{
-                val promt = "Hey ChatGPT, right now, you are being queried through an API to respond" +
+                val prompt = "Hey ChatGPT, right now, you are being queried through an API to respond" +
                         " to user input and assist them in their planning of a road trip. " +
                         "Your task is to provide a brief, compressed list (in bullet point format with ONLY 10 bullet points) " +
                         "of travel essentials and items that are commonly forgotten on a $tripType road trip. " +
@@ -64,7 +64,7 @@ class OpenAiVM : ViewModel() {
                         "at the venue and 42 degrees outside and raining when the user returns. Other useful " +
                         "information about this trip inputted by the user includes:  \"$otherUsefulInfo\"."
 
-                val response = OpenAiApi.getResponse(promt)
+                val response = OpenAiApi.getResponse(prompt)
 
                 openAiState = OpenAiState.Success(summary = response)
 
