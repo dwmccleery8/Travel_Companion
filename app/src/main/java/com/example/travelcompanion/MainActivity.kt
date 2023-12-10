@@ -10,7 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-//import com.example.travelcompanion.screens.Weather_Screen
+import com.example.travelcompanion.screens.WeatherScreen
 import com.example.travelcompanion.ui.theme.TravelCompanionTheme
 
 class MainActivity : ComponentActivity() {

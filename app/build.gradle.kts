@@ -101,6 +101,9 @@ dependencies {
     // CALENDAR
     implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.2.0")
 
+    // CLOCK
+    implementation("com.maxkeppeler.sheets-compose-dialogs:clock:1.2.0")
+
     // STATE
     implementation("com.maxkeppeler.sheets-compose-dialogs:state:1.2.0")
 

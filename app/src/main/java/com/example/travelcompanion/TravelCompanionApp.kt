@@ -58,7 +58,10 @@ fun TravelCompanionApp(
         //third screen, results
         composable(route = NavScreens.ResultsScreen.route) {
             ResultsScreen(
-                onNext = { navController.popBackStack(route = NavScreens.TitleScreen.route, inclusive = false)}
+                onNext = {
+                    navController.popBackStack(route = NavScreens.TitleScreen.route, inclusive = false)
+                    openAiVM.reset()
+                }
             )
         }
     }

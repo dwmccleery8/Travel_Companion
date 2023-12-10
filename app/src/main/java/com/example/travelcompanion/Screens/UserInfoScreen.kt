@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +36,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,7 +54,10 @@ import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import com.maxkeppeler.sheets.clock.ClockDialog
+import com.maxkeppeler.sheets.clock.models.ClockSelection
 import java.time.LocalDate
+import java.time.Period
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +67,10 @@ fun UserInfoScreen(
     context: Context,
     onNext: ()-> Unit = {}
 ) {
+
     val calendarState = rememberUseCaseState()
+    val clockState = rememberUseCaseState()
+    val clockState2 = rememberUseCaseState()
     val calendarConfig = remember{CalendarConfig(
         boundary = (LocalDate.now()..LocalDate.now().plusDays(16))
     )}
@@ -69,9 +79,9 @@ fun UserInfoScreen(
     var returnDateSet by remember { mutableStateOf(false) }
     var departDateSet by remember { mutableStateOf(false) }
 
-    var startGenerate : Boolean by rememberSaveable {
-        mutableStateOf(false)
-    }
+//    var startGenerate : Boolean by rememberSaveable {
+//        mutableStateOf(false)
+//    }
 
     Image(
         painter = painterResource(id = R.drawable.app_background),
@@ -83,132 +93,213 @@ fun UserInfoScreen(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(32.dp)
-            .verticalScroll(rememberScrollState()),
+            .padding(32.dp),
         contentAlignment = Alignment.Center
     ) {
-        Column {
-            Text(
-                text = "Tell us a little bit about your trip...",
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
+        CalendarDialog(state = calendarState, selection = CalendarSelection.Period {startDate,endDate ->
+            openAiVM.departDate = startDate
+            departDateSet = true
+            openAiVM.returnDate = endDate
+            returnDateSet = true
+        }, config = calendarConfig)
 
-            Spacer(modifier = Modifier.height(10.dp))
+        ClockDialog(state = clockState2, selection = ClockSelection.HoursMinutes {hours, minutes ->
+            openAiVM.returnHour = hours
+            openAiVM.returnMinute = minutes
+        })
 
-            Text(text = "Are you traveling for business or leisure?")
+        ClockDialog(state = clockState, selection = ClockSelection.HoursMinutes {hours, minutes ->
+            openAiVM.departHour = hours
+            openAiVM.departMinute = minutes
+        })
 
-            ExposedDropdownMenuBox(
-                expanded = expandedVenue,
-                onExpandedChange = {
-                    expandedVenue = !expandedVenue
-                }
-            ) {
-                TextField(
-                    value = openAiVM.tripType,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedVenue) },
-                    modifier = Modifier.menuAnchor()
-
+        LazyColumn() {
+            item{
+                Text(
+                    text = "Tell us a little bit about your trip...",
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.ExtraBold
                 )
+                Spacer(modifier = Modifier.height(10.dp))
+            }
 
-                ExposedDropdownMenu(
+            item {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(text = "Are you traveling for business or leisure?",
+                    modifier = Modifier.padding(
+                        bottom = 5.dp
+                    ))
+
+                ExposedDropdownMenuBox(
                     expanded = expandedVenue,
-                    onDismissRequest = { expandedVenue = false }
+                    onExpandedChange = {
+                        expandedVenue = !expandedVenue
+                    }
                 ) {
-                    tripTypeOptions.forEach { item ->
-                        DropdownMenuItem(
-                            text = { Text(text = item) },
-                            onClick = {
-                                openAiVM.tripType = item
-                                expandedVenue = false
-                            }
-                        )
+                    TextField(
+                        value = openAiVM.tripType,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedVenue) },
+                        modifier = Modifier.menuAnchor()
+
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expandedVenue,
+                        onDismissRequest = { expandedVenue = false }
+                    ) {
+                        tripTypeOptions.forEach { item ->
+                            DropdownMenuItem(
+                                text = { Text(text = item) },
+                                onClick = {
+                                    openAiVM.tripType = item
+                                    expandedVenue = false
+                                }
+                            )
+                        }
+
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(text = "Outdoors?")
+                Checkbox(checked = openAiVM.isOutside, onCheckedChange = {
+                    openAiVM.isOutside = it
+                } )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(text = "How many people are going?",
+                    modifier = Modifier.padding(
+                        bottom = 5.dp
+                    ))
+
+                TextField(value = openAiVM.amountOfPeople.toString(), onValueChange = {
+                    openAiVM.amountOfPeople = it.toInt()
+                },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {Text("Amount of People:")},
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(painter = painterResource(id = R.drawable.baseline_person_outline_24),
+                            contentDescription = null)
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done)
+                )
+            }
+
+
+            item {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(text = "What is the duration of your trip?")
+                Button(onClick = {calendarState.show()}){
+                    Text(text = "Select Date")
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                if (Period.between(openAiVM.departDate,openAiVM.returnDate).days<1){
+                    Text(text = "What is your estimated departure time?")
+
+
+                    Button(onClick = {clockState.show()}){
+                        Text(text = "Select Departure Time")
                     }
 
+                    Text(text = "What is your estimated return time?")
+
+                    Button(onClick = {clockState2.show()}){
+                        Text(text = "Select Return Time")
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            item {
+                Spacer(modifier = Modifier.height(10.dp))
 
-            Text(text = "Outdoors?")
-            Checkbox(checked = openAiVM.isOutside, onCheckedChange = {
-                openAiVM.isOutside = it
-            } )
+                Row (modifier = Modifier.height(40.dp)) {
+                    Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_right_24), contentDescription = null)
+                    if (departDateSet){
+                        Text(text = " ${openAiVM.departDate}")
+                        if ((Period.between(openAiVM.departDate,openAiVM.returnDate).days<1)&&(openAiVM.departHour!=-1)&&(openAiVM.departMinute!=-1)){
+                            var amORpm: String = "AM"
+                            var printHour: Int = openAiVM.departHour
+                            var printMinutes: String = openAiVM.departMinute.toString()
+                            if (openAiVM.departHour>11){
+                                amORpm = "PM"
+                                if (openAiVM.departHour>12) {
+                                    printHour -= 12
+                                }
+                            }
+                            if (openAiVM.departMinute<10){
+                                printMinutes = "0$printMinutes"
+                            }
+                            Text(text = " @ $printHour:$printMinutes $amORpm")
+                        }
+                    }
+                }
+            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            item {
+                Spacer(modifier = Modifier.height(10.dp))
 
-            Text(text = "How many people are going?")
+                Row (modifier = Modifier.height(40.dp)) {
+                    Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_left_24), contentDescription = null)
+                    if (returnDateSet) {
+                        Text(text = " ${openAiVM.returnDate}")
+                        if ((Period.between(openAiVM.departDate,openAiVM.returnDate).days<1)&&(openAiVM.returnHour!=-1)&&(openAiVM.returnMinute!=-1)){
+                            var amORpm: String = "AM"
+                            var printHour: Int = openAiVM.returnHour
+                            var printMinutes: String = openAiVM.returnMinute.toString()
+                            if (openAiVM.returnHour>11){
+                                amORpm = "PM"
+                                if (openAiVM.returnHour>12) {
+                                    printHour -= 12
+                                }
+                            }
+                            if (openAiVM.returnMinute<10){
+                                printMinutes = "0$printMinutes"
+                            }
+                            Text(text = " @ $printHour:$printMinutes $amORpm")
+                        }
+                    }
+                }
+            }
 
-            TextField(value = openAiVM.amountOfPeople.toString(), onValueChange = {
-                openAiVM.amountOfPeople = it.toInt()
-            },
-                modifier = Modifier.fillMaxWidth(),
-                label = {Text("Amount of People:")},
-                singleLine = true,
-                leadingIcon = {
-                    Icon(painter = painterResource(id = R.drawable.baseline_person_outline_24),
-                        contentDescription = null)
+            item {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(text = "Any other useful information to know?",
+                    modifier = Modifier.padding(
+                        bottom = 5.dp
+                    ))
+
+                TextField(value = openAiVM.otherUsefulInfo, onValueChange = {
+                    openAiVM.otherUsefulInfo = it
                 },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done)
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(text = "What is the duration of your trip?")
-
-            CalendarDialog(state = calendarState, selection = CalendarSelection.Period {startDate,endDate ->
-                openAiVM.departDate = startDate
-                departDateSet = true
-                openAiVM.returnDate = endDate
-                returnDateSet = true
-            }, config = calendarConfig)
-            Button(onClick = {calendarState.show()}){
-                Text(text = "Select Date")
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {Text("Other Information:")},
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(painter = painterResource(id = R.drawable.baseline_info_24),
+                            contentDescription = null)
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done)
+                )
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Row (modifier = Modifier.height(40.dp)) {
-                Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_right_24), contentDescription = null)
-                if (departDateSet){
-                    Text(text = "  ")
-                    Text(text = "Departure Date: ")
-                    Text(text = openAiVM.departDate.toString())
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Row (modifier = Modifier.height(40.dp)) {
-                Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_left_24), contentDescription = null)
-                if (returnDateSet) {
-                    Text(text = "  ")
-                    Text(text = "Return Date:       ")
-                    Text(text = openAiVM.returnDate.toString())
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(text = "Any other useful information to know?")
-
-            TextField(value = openAiVM.otherUsefulInfo, onValueChange = {
-                openAiVM.otherUsefulInfo = it
-            },
-                modifier = Modifier.fillMaxWidth(),
-                label = {Text("Other Information:")},
-                singleLine = true,
-                leadingIcon = {
-                    Icon(painter = painterResource(id = R.drawable.baseline_info_24),
-                        contentDescription = null)
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Done)
-            )
 
 //            Spacer(modifier = Modifier.height(10.dp))
 //
@@ -235,12 +326,26 @@ fun UserInfoScreen(
 //                Text("Generate", fontSize = 10.sp)
 //            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            item {
+                Spacer(modifier = Modifier.height(10.dp))
 
-            Button(
-                onClick = onNext
-            ) {
-                Text("Go to Map Screen")
+                var alphaValue: Float
+
+                if (openAiVM.readyToGo()){
+                    alphaValue = 1.0f
+                }
+                else{
+                    alphaValue = 0.5f
+                }
+
+
+                Button(
+                    onClick = onNext,
+                    modifier = Modifier.alpha(alphaValue),
+                    enabled = openAiVM.readyToGo()
+                ) {
+                    Text("Go to Map Screen")
+                }
             }
         }
 

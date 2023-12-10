@@ -1,4 +1,4 @@
-package com.example.travelcompanion.Screens
+package com.example.travelcompanion.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll

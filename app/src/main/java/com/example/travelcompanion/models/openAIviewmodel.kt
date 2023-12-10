@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.travelcompanion.apis.OpenAiApi
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.Period
 
 sealed interface OpenAiState {
 
@@ -26,9 +27,13 @@ class OpenAiVM : ViewModel() {
     var tripType by mutableStateOf("Select type:")
     var isOutside by mutableStateOf(false)
     var amountOfPeople by mutableIntStateOf(0)
-    var returnDate: LocalDate by mutableStateOf(LocalDate.now())
-    var departDate: LocalDate by mutableStateOf(LocalDate.now())
+    var returnDate: LocalDate by mutableStateOf(LocalDate.now().minusDays(1))
+    var departDate: LocalDate by mutableStateOf(LocalDate.now().minusDays(2))
     var otherUsefulInfo by mutableStateOf("")
+    var departHour: Int by mutableIntStateOf(-1)
+    var departMinute: Int by mutableIntStateOf(-1)
+    var returnHour: Int by mutableIntStateOf(-1)
+    var returnMinute: Int by mutableIntStateOf(-1)
 
     var openAiState: OpenAiState by mutableStateOf(OpenAiState.Loading)
         private set
@@ -37,16 +42,28 @@ class OpenAiVM : ViewModel() {
         tripType = "Select type:"
         isOutside = false
         amountOfPeople = 0
-        returnDate = LocalDate.now()
-        departDate = LocalDate.now()
+        returnDate = LocalDate.now().minusDays(1)
+        departDate = LocalDate.now().minusDays(2)
         otherUsefulInfo = ""
         openAiState = OpenAiState.Loading
+    }
+
+    fun readyToGo(): Boolean{
+        if ((tripType!="Select type:")&&(amountOfPeople>0)&&(returnDate != LocalDate.now().minusDays(1))&&(departDate != LocalDate.now().minusDays(2))){
+            if (Period.between(departDate,returnDate).days<1){
+                return (departHour!=-1)&&(departMinute!=-1)&&(returnHour!=-1)&&(returnMinute!=-1)
+            }
+            else{
+                return true
+            }
+        }
+        return false
     }
 
     fun getAnalysis(){
 
         viewModelScope.launch {
-            var isOutsideText: String = ""
+            var isOutsideText: String
             if (isOutside){
                 isOutsideText = "outside"
             }else{
