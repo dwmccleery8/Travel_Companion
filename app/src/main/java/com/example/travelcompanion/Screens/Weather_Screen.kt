@@ -47,6 +47,7 @@ import kotlin.math.floor
 fun WeatherScreen(
     modifier: Modifier = Modifier,
     onNext: () -> Unit = {},
+    intentOnClick: (lat: Double, long: Double) -> Unit,
     openAiVM: OpenAiVM
 ) {
     Image(
@@ -197,26 +198,33 @@ fun WeatherScreen(
 //                    Text("Items to Bring: ")
                     passVars(openAiVM)
                     openAiVM.getAnalysis()
-                    when (val openAiUIState = openAiVM.openAiState) {
-                        is OpenAiState.Success -> {
-                            Text("Items to Bring: \n" + openAiUIState.summary, fontSize = 20.sp)
-                        }
+                    if (!openAiVM.responseReceived){
+                        when (val openAiUIState = openAiVM.openAiState) {
+                            is OpenAiState.Success -> {
+                                openAiVM.chatGPTResponse = openAiUIState.summary
+                                openAiVM.responseReceived = true
+                                Text("Items to Bring: \n" + openAiVM.chatGPTResponse, fontSize = 20.sp)
+                            }
 
-                        is OpenAiState.Loading -> {
-                            Text("Loading Travel Analysis", fontSize = 30.sp)
-                        }
+                            is OpenAiState.Loading -> {
+                                Text("Loading Travel Analysis", fontSize = 30.sp)
+                            }
 
-                        is OpenAiState.Error -> {
-                            Text("Service Error", fontSize = 30.sp)
+                            is OpenAiState.Error -> {
+                                Text("Service Error", fontSize = 30.sp)
+                            }
                         }
+                    }else{
+                        Text("Items to Bring: \n" + openAiVM.chatGPTResponse, fontSize = 20.sp)
                     }
+
 //                    Spacer(modifier = Modifier.height(10.dp))
 //                    Text("  \u25CF    Item 1")
 //                    Text("  \u25CF    Item 2")
 //                    Text("  \u25CF    Item 3")
 //                    Text("  \u25CF    Item 4")
                     Spacer(modifier = modifier.height(8.dp))
-                    Button(onClick = { /*TODO*/ }) {
+                    Button(onClick = {intentOnClick(28.3017,-81.4322)}) {
                         Text("Let's Go!")
                     }
                     Button(

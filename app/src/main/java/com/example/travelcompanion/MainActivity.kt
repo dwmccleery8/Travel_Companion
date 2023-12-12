@@ -11,12 +11,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travelcompanion.models.IntentViewModel
-import com.example.travelcompanion.screens.WeatherScreen
 import com.example.travelcompanion.ui.theme.TravelCompanionTheme
 
 class MainActivity() : ComponentActivity() {
@@ -42,14 +39,19 @@ class MainActivity() : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TravelCompanionApp(LocalContext.current, intentOnClick = {intentOnClick()})
+                    TravelCompanionApp(LocalContext.current, intentOnClick = { lat:Double, long:Double ->
+                        intentOnClick(lat,long)
+                    })
 //                    WeatherScreen()
                 }
             }
         }
     }
 
-    fun intentOnClick(){
+    fun intentOnClick(lat: Double, long: Double): Unit{
+        intentVM.lat = lat
+        intentVM.long = long
+        intentVM.updateUri()
         val gmmIntentUri = Uri.parse(intentVM.uri)
         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
         mapIntent.setPackage("com.google.android.apps.maps")

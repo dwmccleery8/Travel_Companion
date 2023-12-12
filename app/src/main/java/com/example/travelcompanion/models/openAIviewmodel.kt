@@ -39,6 +39,8 @@ class OpenAiVM : ViewModel() {
     var returnMinute: Int? by mutableStateOf(null)
     var absoluteLow: Double? by mutableStateOf(null)
     var absoluteHigh: Double? by mutableStateOf(null)
+    var chatGPTResponse: String? by mutableStateOf(null)
+    var responseReceived: Boolean by mutableStateOf(false)
 
     var openAiState: OpenAiState by mutableStateOf(OpenAiState.Loading)
         private set
@@ -58,6 +60,8 @@ class OpenAiVM : ViewModel() {
         returnMinute = null
         absoluteLow = null
         absoluteHigh = null
+        chatGPTResponse = null
+        responseReceived = false
         openAiState = OpenAiState.Loading
     }
 

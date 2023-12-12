@@ -1,10 +1,7 @@
 package com.example.travelcompanion
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -12,14 +9,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.travelcompanion.models.IntentViewModel
 import com.example.travelcompanion.screens.MapScreen
-import com.example.travelcompanion.screens.ResultsScreen
 import com.example.travelcompanion.screens.UserInfoScreen
 import com.example.travelcompanion.screens.TitleScreen
 import com.example.travelcompanion.models.OpenAiVM
-
-
+import com.example.travelcompanion.screens.WeatherScreen
 
 
 sealed class NavScreens(val route: String) {
@@ -35,9 +29,9 @@ sealed class NavScreens(val route: String) {
 @Composable
 fun TravelCompanionApp(
     context: Context,
-    intentOnClick: ()-> Unit,
+    intentOnClick: (Double, Double) -> Unit,
     navController: NavHostController = rememberNavController(),
-    openAiVM : OpenAiVM = viewModel()
+    openAiVM: OpenAiVM = viewModel()
 
 ) {
 
@@ -61,18 +55,21 @@ fun TravelCompanionApp(
         //second screen, map
         composable(route = NavScreens.MapScreen.route) {
             MapScreen(
-                onNext = { navController.navigate(NavScreens.ResultsScreen.route)},
-                intentOnClick = intentOnClick
+                onNext = { navController.navigate(NavScreens.ResultsScreen.route)}
             )
 
         }
 
         //third screen, results
         composable(route = NavScreens.ResultsScreen.route) {
-            ResultsScreen(
+            WeatherScreen(
                 onNext = {
                     navController.popBackStack(route = NavScreens.TitleScreen.route, inclusive = false)
                     openAiVM.reset()
+                },
+                openAiVM = openAiVM,
+                intentOnClick = {lat, long ->
+                    intentOnClick(lat,long)
                 }
             )
         }
