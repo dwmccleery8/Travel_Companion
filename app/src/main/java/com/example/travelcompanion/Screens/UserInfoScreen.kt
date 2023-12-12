@@ -182,7 +182,7 @@ fun UserInfoScreen(
                         bottom = 5.dp
                     ))
 
-                TextField(value = openAiVM.amountOfPeople.toString(), onValueChange = {
+                TextField(value = openAiVM?.amountOfPeople.toString(), onValueChange = {
                     openAiVM.amountOfPeople = it.toInt()
                 },
                     modifier = Modifier.fillMaxWidth(),
@@ -210,18 +210,20 @@ fun UserInfoScreen(
             item {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if (Period.between(openAiVM.departDate,openAiVM.returnDate).days<1){
-                    Text(text = "What is your estimated departure time?")
+                if (openAiVM.departDate!=null && openAiVM.returnDate!=null){
+                    if (Period.between(openAiVM?.departDate,openAiVM?.returnDate).days<1){
+                        Text(text = "What is your estimated departure time?")
 
 
-                    Button(onClick = {clockState.show()}){
-                        Text(text = "Select Departure Time")
-                    }
+                        Button(onClick = {clockState.show()}){
+                            Text(text = "Select Departure Time")
+                        }
 
-                    Text(text = "What is your estimated return time?")
+                        Text(text = "What is your estimated return time?")
 
-                    Button(onClick = {clockState2.show()}){
-                        Text(text = "Select Return Time")
+                        Button(onClick = {clockState2.show()}){
+                            Text(text = "Select Return Time")
+                        }
                     }
                 }
             }
@@ -232,18 +234,18 @@ fun UserInfoScreen(
                 Row (modifier = Modifier.height(40.dp)) {
                     Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_right_24), contentDescription = null)
                     if (departDateSet){
-                        Text(text = " ${openAiVM.departDate}")
-                        if ((Period.between(openAiVM.departDate,openAiVM.returnDate).days<1)&&(openAiVM.departHour!=-1)&&(openAiVM.departMinute!=-1)){
+                        Text(text = " ${openAiVM?.departDate}")
+                        if ((Period.between(openAiVM?.departDate,openAiVM?.returnDate).days<1)&&(openAiVM.departHour!=null)&&(openAiVM?.departMinute!=null)){
                             var amORpm: String = "AM"
-                            var printHour: Int = openAiVM.departHour
+                            var printHour: Int = openAiVM.departHour!!
                             var printMinutes: String = openAiVM.departMinute.toString()
-                            if (openAiVM.departHour>11){
+                            if (openAiVM.departHour!! >11){
                                 amORpm = "PM"
-                                if (openAiVM.departHour>12) {
+                                if (openAiVM.departHour!! >12) {
                                     printHour -= 12
                                 }
                             }
-                            if (openAiVM.departMinute<10){
+                            if (openAiVM.departMinute!! <10){
                                 printMinutes = "0$printMinutes"
                             }
                             Text(text = " @ $printHour:$printMinutes $amORpm")
@@ -259,17 +261,17 @@ fun UserInfoScreen(
                     Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_left_24), contentDescription = null)
                     if (returnDateSet) {
                         Text(text = " ${openAiVM.returnDate}")
-                        if ((Period.between(openAiVM.departDate,openAiVM.returnDate).days<1)&&(openAiVM.returnHour!=-1)&&(openAiVM.returnMinute!=-1)){
+                        if ((Period.between(openAiVM.departDate,openAiVM.returnDate).days<1)&&(openAiVM.returnHour!=null)&&(openAiVM.returnMinute!=null)){
                             var amORpm: String = "AM"
-                            var printHour: Int = openAiVM.returnHour
+                            var printHour: Int = openAiVM.returnHour!!
                             var printMinutes: String = openAiVM.returnMinute.toString()
-                            if (openAiVM.returnHour>11){
+                            if (openAiVM.returnHour!! >11){
                                 amORpm = "PM"
-                                if (openAiVM.returnHour>12) {
+                                if (openAiVM.returnHour!! >12) {
                                     printHour -= 12
                                 }
                             }
-                            if (openAiVM.returnMinute<10){
+                            if (openAiVM.returnMinute!! <10){
                                 printMinutes = "0$printMinutes"
                             }
                             Text(text = " @ $printHour:$printMinutes $amORpm")
@@ -286,7 +288,13 @@ fun UserInfoScreen(
                         bottom = 5.dp
                     ))
 
-                TextField(value = openAiVM.otherUsefulInfo, onValueChange = {
+                var usefulString: String
+                if (openAiVM.otherUsefulInfo!=null){
+                    usefulString = openAiVM.otherUsefulInfo!!
+                }else{
+                    usefulString = ""
+                }
+                TextField(value = usefulString, onValueChange = {
                     openAiVM.otherUsefulInfo = it
                 },
                     modifier = Modifier.fillMaxWidth(),
