@@ -3,6 +3,7 @@ package com.example.travelcompanion.models
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -34,6 +35,9 @@ class OpenAiVM : ViewModel() {
     var departMinute: Int by mutableIntStateOf(-1)
     var returnHour: Int by mutableIntStateOf(-1)
     var returnMinute: Int by mutableIntStateOf(-1)
+    var absoluteLow: Double by mutableDoubleStateOf(-1.0)
+    var absoluteHigh: Double by mutableDoubleStateOf(-1.0)
+
 
     var openAiState: OpenAiState by mutableStateOf(OpenAiState.Loading)
         private set

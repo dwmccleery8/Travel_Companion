@@ -17,7 +17,7 @@ interface OpenAiApiService {
 
     @Headers(
         "Content-Type: application/json",
-        "Authorization: Bearer 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"
+        "Authorization: Bearer api_key"
     )
     @POST("v1/chat/completions")
     suspend fun getChatCompletions(@Body request: ChatRequest) : ChatResponse

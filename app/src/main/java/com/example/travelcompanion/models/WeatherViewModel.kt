@@ -40,7 +40,6 @@ class WeatherViewModel : ViewModel() {
 }
 
 fun getBetterDate(date:String): String {
-    println(date)
     var betterDate = ""
     betterDate += if (date[5] == '0') {
         "Jan "

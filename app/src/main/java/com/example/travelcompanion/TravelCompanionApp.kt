@@ -14,13 +14,14 @@ import com.example.travelcompanion.screens.ResultsScreen
 import com.example.travelcompanion.screens.UserInfoScreen
 import com.example.travelcompanion.screens.TitleScreen
 import com.example.travelcompanion.models.OpenAiVM
+import com.example.travelcompanion.screens.WeatherScreen
 
 
 sealed class NavScreens(val route: String) {
     object TitleScreen: NavScreens(route = "TitleScreen")
     object MapScreen : NavScreens(route = "MapScreen")
     object UserInfoScreen: NavScreens(route = "UserInfoScreen")
-    object ResultsScreen: NavScreens(route = "ResultsScreen")
+    object WeatherScreen: NavScreens(route = "WeatherScreen")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -50,18 +51,20 @@ fun TravelCompanionApp(
         //second screen, map
         composable(route = NavScreens.MapScreen.route) {
             MapScreen(
-                onNext = { navController.navigate(NavScreens.ResultsScreen.route)}
+                onNext = { navController.navigate(NavScreens.WeatherScreen.route)}
             )
 
         }
 
         //third screen, results
-        composable(route = NavScreens.ResultsScreen.route) {
-            ResultsScreen(
+        composable(route = NavScreens.WeatherScreen.route) {
+            WeatherScreen(
                 onNext = {
                     navController.popBackStack(route = NavScreens.TitleScreen.route, inclusive = false)
                     openAiVM.reset()
-                }
+
+                },
+                openAiVM = openAiVM
             )
         }
     }
