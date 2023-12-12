@@ -25,19 +25,20 @@ sealed interface OpenAiState {
 @RequiresApi(Build.VERSION_CODES.O)
 class OpenAiVM : ViewModel() {
 
-    var tripType by mutableStateOf("Select type:")
-    var isOutside by mutableStateOf(false)
-    var amountOfPeople by mutableIntStateOf(0)
-    var returnDate: LocalDate by mutableStateOf(LocalDate.now().minusDays(1))
-    var departDate: LocalDate by mutableStateOf(LocalDate.now().minusDays(2))
-    var otherUsefulInfo by mutableStateOf("")
-    var departHour: Int by mutableIntStateOf(-1)
-    var departMinute: Int by mutableIntStateOf(-1)
-    var returnHour: Int by mutableIntStateOf(-1)
-    var returnMinute: Int by mutableIntStateOf(-1)
-    var absoluteLow: Double by mutableDoubleStateOf(-1.0)
-    var absoluteHigh: Double by mutableDoubleStateOf(-1.0)
-
+    var tripType: String by mutableStateOf("Select type:")
+    var isOutside: Boolean by mutableStateOf(false)
+    var amountOfPeople: Int by mutableIntStateOf(0)
+    var returnDate: LocalDate? by mutableStateOf(null)
+    var departDate: LocalDate? by mutableStateOf(null)
+    var otherUsefulInfo: String? by mutableStateOf(null)
+    var departHour: Int? by mutableStateOf(null)
+    var departMinute: Int? by mutableStateOf(null)
+    var arrivalHour: Int? by mutableStateOf(null)
+    var arrivalMinute: Int? by mutableStateOf(null)
+    var returnHour: Int? by mutableStateOf(null)
+    var returnMinute: Int? by mutableStateOf(null)
+    var absoluteLow: Double? by mutableStateOf(null)
+    var absoluteHigh: Double? by mutableStateOf(null)
 
     var openAiState: OpenAiState by mutableStateOf(OpenAiState.Loading)
         private set
@@ -46,16 +47,24 @@ class OpenAiVM : ViewModel() {
         tripType = "Select type:"
         isOutside = false
         amountOfPeople = 0
-        returnDate = LocalDate.now().minusDays(1)
-        departDate = LocalDate.now().minusDays(2)
-        otherUsefulInfo = ""
+        returnDate = null
+        departDate = null
+        otherUsefulInfo = null
+        departHour = null
+        departMinute = null
+        arrivalHour = null
+        arrivalMinute = null
+        returnHour = null
+        returnMinute = null
+        absoluteLow = null
+        absoluteHigh = null
         openAiState = OpenAiState.Loading
     }
 
     fun readyToGo(): Boolean{
-        if ((tripType!="Select type:")&&(amountOfPeople>0)&&(returnDate != LocalDate.now().minusDays(1))&&(departDate != LocalDate.now().minusDays(2))){
+        if ((tripType!=null)&&(amountOfPeople>0)&&(returnDate!=null)&&(departDate!=null)){
             if (Period.between(departDate,returnDate).days<1){
-                return (departHour!=-1)&&(departMinute!=-1)&&(returnHour!=-1)&&(returnMinute!=-1)
+                return (departHour!=null)&&(departMinute!=null)&&(returnHour!=null)&&(returnMinute!=null)
             }
             else{
                 return true
