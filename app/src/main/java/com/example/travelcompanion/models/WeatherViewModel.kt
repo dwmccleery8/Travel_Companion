@@ -1,6 +1,7 @@
 package com.example.travelcompanion.models
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -19,17 +20,20 @@ sealed interface WeatherUiState {
 class WeatherViewModel : ViewModel() {
 
     var weatherUIState: WeatherUiState by mutableStateOf(WeatherUiState.Loading)
+    var weatherLon by mutableDoubleStateOf(0.0)
+    var weatherLat by mutableDoubleStateOf(0.0)
+
 
     init {
-        getWeatherData()
+        //getWeatherData()
     }
 
     fun getWeatherData() {
         viewModelScope.launch {
 
             try {
-                val weatherHourly = WeatherAPI.retrofitService.getWeatherHourly(lon = -80.08037698997848, lat = 41.155372314696706)
-                val weatherDaily = WeatherAPI.retrofitService.getWeatherDaily(lon = -80.08037698997848, lat = 41.155372314696706)
+                val weatherHourly = WeatherAPI.retrofitService.getWeatherHourly(lat = weatherLat, lon = weatherLon)
+                val weatherDaily = WeatherAPI.retrofitService.getWeatherDaily(lat = weatherLat, lon = weatherLon)
                 weatherUIState = WeatherUiState.Success(weatherHourly = weatherHourly, weatherDaily = weatherDaily)
             } catch (e: Exception) {
                 println("IO Error ${e.message}")

@@ -14,6 +14,7 @@ import com.example.travelcompanion.screens.AddressAutoCompleteScreen
 import com.example.travelcompanion.screens.UserInfoScreen
 import com.example.travelcompanion.screens.TitleScreen
 import com.example.travelcompanion.models.OpenAiVM
+import com.example.travelcompanion.models.WeatherViewModel
 import com.example.travelcompanion.screens.WeatherScreen
 
 
@@ -40,6 +41,7 @@ fun TravelCompanionApp(
 
 ) {
     val directionsVM = viewModel<DirectionsViewModel>()
+    val weatherVM = viewModel<WeatherViewModel>()
 
 
     NavHost(navController = navController, startDestination = NavScreens.TitleScreen.route) {
@@ -62,7 +64,7 @@ fun TravelCompanionApp(
         composable(route = NavScreens.AddressAutoCompleteScreen.route) {
             AddressAutoCompleteScreen(onNext = {
                 navController.navigate(NavScreens.WeatherScreen.route)
-            }, directionsVM = directionsVM)
+            }, directionsVM = directionsVM, weatherVM = weatherVM)
         }
 
         //third screen, results
@@ -73,7 +75,7 @@ fun TravelCompanionApp(
                     navController.popBackStack(route = NavScreens.TitleScreen.route, inclusive = false)
                     openAiVM.reset()
                 },
-                openAiVM = openAiVM, directionsVM = directionsVM
+                openAiVM = openAiVM, directionsVM = directionsVM, weatherVM = weatherVM
             )
         }
     }

@@ -48,7 +48,8 @@ fun WeatherScreen(
     modifier: Modifier = Modifier,
     onNext: () -> Unit = {},
     openAiVM: OpenAiVM,
-    directionsVM: DirectionsViewModel
+    directionsVM: DirectionsViewModel,
+    weatherVM: WeatherViewModel
 ) {
     Image(
         painter = painterResource(id = R.drawable.app_background),
@@ -58,7 +59,6 @@ fun WeatherScreen(
         alpha = 0.5f
     )
 
-    val weatherVM = viewModel<WeatherViewModel>()
     val weatherUiState = weatherVM.weatherUIState
     val weatherIcons = Datasource().loadIcons()
     val isHourly = false

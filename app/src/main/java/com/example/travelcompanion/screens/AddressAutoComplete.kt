@@ -31,13 +31,15 @@ import com.example.travelcompanion.models.DirectionsViewModel
 import com.example.travelcompanion.models.GeocodingUiState
 import com.example.travelcompanion.models.GeocodingViewModel
 import com.example.travelcompanion.models.ResultAddress
+import com.example.travelcompanion.models.WeatherViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun AddressAutoCompleteScreen(
     modifier: Modifier = Modifier,
     onNext: ()-> Unit = {},
-    directionsVM: DirectionsViewModel
+    directionsVM: DirectionsViewModel,
+    weatherVM: WeatherViewModel
 ) {
     val addressVM = viewModel<GeocodingViewModel>()
     val addressUiState = addressVM.geocodingUiState
@@ -98,7 +100,8 @@ fun AddressAutoCompleteScreen(
                         } else {
                             Color(0xFFA1887F)
                         }
-                        ResultCard(result = result, modifier, showOriginResults, addressVM, backGroundColor, directionsVM)
+                        ResultCard(result = result, modifier,
+                            showOriginResults, addressVM, backGroundColor, directionsVM, weatherVM)
                     }
                 }
             }
@@ -112,13 +115,15 @@ fun AddressAutoCompleteScreen(
                         } else {
                             Color(0xFFA1887F)
                         }
-                        ResultCard(result = result, modifier, showDestinationResults, addressVM, backGroundColor, directionsVM)
+                        ResultCard(result = result, modifier,
+                            showDestinationResults, addressVM, backGroundColor, directionsVM, weatherVM)
                     }
                 }
             }
             Button(
                 onClick = {onNext()
-                    directionsVM.getDirectionsData()      },
+                    directionsVM.getDirectionsData()
+                          weatherVM.getWeatherData()},
             ) {
                 Text("Go to Results Screen")
             }
@@ -144,7 +149,8 @@ fun ResultCard(
     showResults: MutableState<Boolean>,
     addressVM : GeocodingViewModel,
     backGroundColor: Color,
-    directionsVM: DirectionsViewModel
+    directionsVM: DirectionsViewModel,
+    weatherVM: WeatherViewModel
 ) {
 
     Card(modifier = modifier
@@ -163,6 +169,8 @@ fun ResultCard(
             } else {
                 directionsVM.destinationLat = result.lat
                 directionsVM.destinationLon = result.lon
+                weatherVM.weatherLat = result.lat
+                weatherVM.weatherLon = result.lon
                 addressVM.DestinationAddressText = result.formatted
             }
         showResults.value = false
