@@ -1,6 +1,10 @@
 package com.example.travelcompanion.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,9 +28,13 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.travelcompanion.R
 import com.example.travelcompanion.models.DirectionsViewModel
 import com.example.travelcompanion.models.GeocodingUiState
 import com.example.travelcompanion.models.GeocodingViewModel
@@ -37,95 +45,136 @@ import com.example.travelcompanion.models.WeatherViewModel
 @Composable
 fun AddressAutoCompleteScreen(
     modifier: Modifier = Modifier,
-    onNext: ()-> Unit = {},
+    onNext: () -> Unit = {},
     directionsVM: DirectionsViewModel,
-    weatherVM: WeatherViewModel
+    weatherVM: WeatherViewModel,
+    addressVM: GeocodingViewModel
 ) {
-    val addressVM = viewModel<GeocodingViewModel>()
+    Image(
+        painter = painterResource(id = R.drawable.app_background),
+        contentDescription = null,
+        modifier = modifier.fillMaxSize(),
+        contentScale = ContentScale.Crop,
+        alpha = 0.5f
+    )
     val addressUiState = addressVM.geocodingUiState
-    val showOriginResults = remember { mutableStateOf(false)}
-    val showDestinationResults = remember { mutableStateOf(false)}
-    val keyboardController =    LocalSoftwareKeyboardController.current
+    val showOriginResults = remember { mutableStateOf(false) }
+    val showDestinationResults = remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
 
     when (addressUiState) {
         is GeocodingUiState.Success -> {
-            Column (
-                modifier = modifier.fillMaxWidth()
-            ){
-                Text("Enter Starting Location")
-                SearchBar(
-                    query = addressVM.OriginAddressText,
-                    onQueryChange = {addressVM.OriginAddressText = it
-                        if (addressVM.OriginAddressText != "") {
-                            addressVM.getGeocodingData()
-                            showOriginResults.value = true
-                            addressVM.isVMOrigin = true
-                        }},
-                    onSearch = { keyboardController?.hide()},
-                    active = true,
-                    onActiveChange = {},
-                    colors = SearchBarDefaults.colors(Color.LightGray),
-                    modifier = modifier.height(72.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(bottom = 150.dp),
+                    verticalArrangement = Arrangement.Center
                 ) {
+                    Text("Enter Starting Location", fontSize = 24.sp)
+                    Spacer(modifier = modifier.height(4.dp))
 
-                }
-                Text("Enter Destination")
-                SearchBar(
-                    query = addressVM.DestinationAddressText,
-                    onQueryChange = {addressVM.DestinationAddressText = it
-                        if (addressVM.DestinationAddressText != "") {
-                            addressVM.getGeocodingData()
-                            showDestinationResults.value = true
-                            addressVM.isVMOrigin = false
-                        }},
-                    onSearch = { keyboardController?.hide() },
-                    active = true,
-                    onActiveChange = {},
-                    colors = SearchBarDefaults.colors(Color.LightGray),
-                    modifier = modifier.height(72.dp)
-                ) {
+                    SearchBar(
+                        query = addressVM.OriginAddressText,
+                        onQueryChange = {
+                            addressVM.OriginAddressText = it
+                            if (addressVM.OriginAddressText != "") {
+                                addressVM.getGeocodingData()
+                                showOriginResults.value = true
+                                addressVM.isVMOrigin = true
+                            }
+                        },
+                        onSearch = { keyboardController?.hide() },
+                        active = true,
+                        onActiveChange = {},
+                        colors = SearchBarDefaults.colors(Color.LightGray),
+                        modifier = modifier.height(72.dp)
+                    ) {
+
+                    }
+                    Spacer(modifier = modifier.height(12.dp))
+
+                    Text("Enter Destination", fontSize = 24.sp)
+                    Spacer(modifier = modifier.height(4.dp))
+                    SearchBar(
+                        query = addressVM.DestinationAddressText,
+                        onQueryChange = {
+                            addressVM.DestinationAddressText = it
+                            if (addressVM.DestinationAddressText != "") {
+                                addressVM.getGeocodingData()
+                                showDestinationResults.value = true
+                                addressVM.isVMOrigin = false
+                            }
+                        },
+                        onSearch = { keyboardController?.hide() },
+                        active = true,
+                        onActiveChange = {},
+                        colors = SearchBarDefaults.colors(Color.LightGray),
+                        modifier = modifier.height(72.dp)
+                    ) {
+
+                    }
+                    Spacer(modifier = modifier.height(12.dp))
+                    Button(
+                        onClick = {
+                            onNext()
+                            directionsVM.getDirectionsData()
+                            weatherVM.getWeatherData()
+                        },
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Text("Go to Results Screen")
+                    }
 
                 }
 
             }
 
             if (showOriginResults.value) {
-                LazyColumn(modifier = modifier
-                    .padding(top = 95.dp)
-                    .fillMaxWidth()) {
-                    itemsIndexed(addressUiState.address.results) {index, result ->
+                LazyColumn(
+                    modifier = modifier
+                        .padding(top = 270.dp)
+                        .fillMaxWidth()
+                ) {
+                    itemsIndexed(addressUiState.address.results) { index, result ->
                         val backGroundColor = if (index % 2 == 0) {
                             Color(0xFFBCAAA4)
                         } else {
                             Color(0xFFA1887F)
                         }
-                        ResultCard(result = result, modifier,
-                            showOriginResults, addressVM, backGroundColor, directionsVM, weatherVM)
+                        ResultCard(
+                            result = result, modifier,
+                            showOriginResults, addressVM, backGroundColor, directionsVM, weatherVM
+                        )
                     }
                 }
             }
             if (showDestinationResults.value) {
-                LazyColumn(modifier = modifier
-                    .padding(top = 180.dp)
-                    .fillMaxWidth()) {
-                    itemsIndexed(addressUiState.address.results) {index, result ->
+                LazyColumn(
+                    modifier = modifier
+                        .padding(top = 390.dp)
+                        .fillMaxWidth()
+                ) {
+                    itemsIndexed(addressUiState.address.results) { index, result ->
                         val backGroundColor = if (index % 2 == 0) {
                             Color(0xFFBCAAA4)
                         } else {
                             Color(0xFFA1887F)
                         }
-                        ResultCard(result = result, modifier,
-                            showDestinationResults, addressVM, backGroundColor, directionsVM, weatherVM)
+                        ResultCard(
+                            result = result,
+                            modifier,
+                            showDestinationResults,
+                            addressVM,
+                            backGroundColor,
+                            directionsVM,
+                            weatherVM
+                        )
                     }
                 }
-            }
-            Button(
-                onClick = {onNext()
-                    directionsVM.getDirectionsData()
-                          weatherVM.getWeatherData()},
-            ) {
-                Text("Go to Results Screen")
             }
 
 
@@ -147,7 +196,7 @@ fun ResultCard(
     result: ResultAddress,
     modifier: Modifier,
     showResults: MutableState<Boolean>,
-    addressVM : GeocodingViewModel,
+    addressVM: GeocodingViewModel,
     backGroundColor: Color,
     directionsVM: DirectionsViewModel,
     weatherVM: WeatherViewModel
@@ -173,7 +222,7 @@ fun ResultCard(
                 weatherVM.weatherLon = result.lon
                 addressVM.DestinationAddressText = result.formatted
             }
-        showResults.value = false
+            showResults.value = false
         }) {
         Text(result.formatted)
     }

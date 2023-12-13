@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import com.example.travelcompanion.R
 import com.example.travelcompanion.models.OpenAiVM
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
@@ -202,7 +203,9 @@ fun UserInfoScreen(
 
                 TextField(
                     value = openAiVM.amountOfPeople.toString(), onValueChange = {
-                        openAiVM.amountOfPeople = it.toInt()
+                        if (it.isDigitsOnly()&&(it.isNotEmpty())){
+                            openAiVM.amountOfPeople = it.toInt()
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("Amount of People:") },
@@ -217,8 +220,7 @@ fun UserInfoScreen(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     )
-                )
-            }
+                )            }
 
 
             item {
@@ -393,7 +395,7 @@ fun UserInfoScreen(
                     modifier = Modifier.alpha(alphaValue),
                     enabled = openAiVM.readyToGo()
                 ) {
-                    Text("Go to Map Screen")
+                    Text("Go to Address Input Screen")
                 }
             }
         }

@@ -27,6 +27,11 @@ class WeatherViewModel : ViewModel() {
     init {
         //getWeatherData()
     }
+    fun reset() {
+        weatherUIState = WeatherUiState.Loading
+        weatherLon = 0.0
+        weatherLat = 0.0
+    }
 
     fun getWeatherData() {
         viewModelScope.launch {

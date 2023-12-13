@@ -22,9 +22,19 @@ class DirectionsViewModel : ViewModel() {
     var startingLon by mutableDoubleStateOf(0.0)
     var destinationLat by mutableDoubleStateOf(0.0)
     var destinationLon by mutableDoubleStateOf(0.0)
+    var destinationString by mutableStateOf("")
 
     init {
         // getDirectionsData()
+    }
+
+    fun reset() {
+        directionsUIState = DirectionsUiState.Loading
+        startingLat = 0.0
+        startingLon = 0.0
+        destinationLat = 0.0
+        destinationLon = 0.0
+        destinationString = ""
     }
 
 

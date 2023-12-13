@@ -28,6 +28,7 @@ class OpenAiVM : ViewModel() {
     var tripType: String by mutableStateOf("Select type:")
     var isOutside: Boolean by mutableStateOf(false)
     var amountOfPeople: Int by mutableIntStateOf(0)
+    var travelTime: Int by mutableIntStateOf(0)
     var otherUsefulInfo: String? by mutableStateOf(null)
     var departEpochTime: Instant? by mutableStateOf(null)
     var arrivalEpochTime: Instant? by mutableStateOf(null)
@@ -44,7 +45,7 @@ class OpenAiVM : ViewModel() {
     var openAiState: OpenAiState by mutableStateOf(OpenAiState.Loading)
         private set
 
-    val zoneId = ZoneId.of("EST")
+    val zoneId: ZoneId = ZoneId.of("EST")
 
     fun reset(){
         tripType = "Select type:"
@@ -92,8 +93,7 @@ class OpenAiVM : ViewModel() {
                         "of travel essentials and items that are commonly forgotten on a $tripType road trip. " +
                         "The venue being traveled to is mainly $isOutsideText and there will be $amountOfPeople people there. " +
                         "This person will be leaving on ${departEpochTime!!.atZone(zoneId).toLocalDate()} and will be returning home on ${returnEpochTime!!.atZone(zoneId).toLocalDate()}. " +
-                        "This road trip will take 5 hours and it will be 32 degrees outside and sunny on arrival " +
-                        "at the venue and 42 degrees outside and raining when the user returns. Other useful " +
+                        "This road trip will take $travelTime minutes and the temperature will be between $absoluteLow and $absoluteHigh degrees Fahrenheit. Other useful " +
                         "information about this trip inputted by the user includes:  \"$otherUsefulInfo\"."
 
                 val response = OpenAiApi.getResponse(prompt)

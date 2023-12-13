@@ -28,6 +28,14 @@ class GeocodingViewModel : ViewModel() {
         getGeocodingData()
     }
 
+    fun reset() {
+        geocodingUiState = GeocodingUiState.Loading
+        OriginAddressText = "origin"
+        DestinationAddressText = "destination"
+        isVMOrigin = true
+    }
+
+
     fun getGeocodingData() {
         viewModelScope.launch {
 
