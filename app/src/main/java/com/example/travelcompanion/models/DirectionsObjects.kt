@@ -8,7 +8,6 @@ data class DirectionsObjects(
 )
 
 @Serializable
-
 data class DirectionsRoute(
     val bounds: Bounds,
     val copyrights: String,
@@ -19,16 +18,14 @@ data class DirectionsRoute(
     val waypoint_order: List<Int>
 )
 @Serializable
-
 data class Bounds(
     val northeast: LatLngLiteral,
     val southwest: LatLngLiteral
 )
 @Serializable
-
 data class LatLngLiteral(
-    val lat: Int,
-    val lon: Int,
+    val lat: Double,
+    val lng: Double
 )
 @Serializable
 data class DirectionsLeg(

@@ -34,6 +34,8 @@ import com.example.travelcompanion.R
 import com.example.travelcompanion.WeatherDetailsDaily
 import com.example.travelcompanion.data.Datasource
 import com.example.travelcompanion.data.WeatherIcon
+import com.example.travelcompanion.models.DirectionsUiState
+import com.example.travelcompanion.models.DirectionsViewModel
 import com.example.travelcompanion.models.OpenAiState
 import com.example.travelcompanion.models.OpenAiVM
 import com.example.travelcompanion.models.WeatherUiState
@@ -47,7 +49,8 @@ import kotlin.math.floor
 fun WeatherScreen(
     modifier: Modifier = Modifier,
     onNext: () -> Unit = {},
-    openAiVM: OpenAiVM
+    openAiVM: OpenAiVM,
+    directionsVM: DirectionsViewModel
 ) {
     Image(
         painter = painterResource(id = R.drawable.app_background),
@@ -61,7 +64,8 @@ fun WeatherScreen(
     val weatherUiState = weatherVM.weatherUIState
     val weatherIcons = Datasource().loadIcons()
     val isHourly: Boolean = false
-
+    val directionsUiState = directionsVM.directionsUIState
+    var durationText: String = ""
 
 
     when (weatherUiState) {
@@ -76,6 +80,20 @@ fun WeatherScreen(
                 }
             }
 
+            when(directionsUiState) {
+                is DirectionsUiState.Success -> {
+                    durationText = directionsUiState.directions.routes[0].legs[0].duration.text
+                }
+                is DirectionsUiState.Error -> {
+                    Text("Error")
+                }
+
+                is DirectionsUiState.Loading -> {
+                    Text("Loading")
+                }
+            }
+
+
             if (isHourly) {
                 Column(
                     modifier = modifier
@@ -85,6 +103,7 @@ fun WeatherScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Text("Travel Time: $durationText")
                     Text("Approximate Time of Arrival: 12:30 PM EST")
                     Text("Weather Conditions Upon Arrival", fontSize = 20.sp)
 
@@ -143,6 +162,7 @@ fun WeatherScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Text("Travel Time: $durationText")
                     Text("Approximate Time of Arrival: 12:30 PM EST")
                     Text("Weather Conditions on Day of Arrival", fontSize = 20.sp)
 

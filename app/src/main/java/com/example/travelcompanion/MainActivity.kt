@@ -11,12 +11,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travelcompanion.models.IntentViewModel
-import com.example.travelcompanion.screens.WeatherScreen
 import com.example.travelcompanion.ui.theme.TravelCompanionTheme
 
 class MainActivity() : ComponentActivity() {
@@ -44,6 +41,8 @@ class MainActivity() : ComponentActivity() {
                 ) {
                     TravelCompanionApp(LocalContext.current, intentOnClick = {intentOnClick()})
 //                    WeatherScreen()
+//                    AddressAutoCompleteScreen()
+
                 }
             }
         }
