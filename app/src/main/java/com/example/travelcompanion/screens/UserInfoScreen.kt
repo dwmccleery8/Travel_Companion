@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,12 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,26 +24,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.travelcompanion.R
-import com.example.travelcompanion.models.OpenAiState
 import com.example.travelcompanion.models.OpenAiVM
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -56,8 +46,11 @@ import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockSelection
+import java.time.Instant
 import java.time.LocalDate
 import java.time.Period
+import java.time.format.DateTimeFormatter
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,20 +90,23 @@ fun UserInfoScreen(
         contentAlignment = Alignment.Center
     ) {
         CalendarDialog(state = calendarState, selection = CalendarSelection.Period {startDate,endDate ->
-            openAiVM.departDate = startDate
+            //date.atStartOfDay(zoneId).toInstant().toEpochMilli();
+            openAiVM.departEpochTime = Instant.ofEpochMilli(startDate.atStartOfDay(openAiVM.zoneId).toInstant().toEpochMilli())
             departDateSet = true
-            openAiVM.returnDate = endDate
+            openAiVM.returnEpochTime = Instant.ofEpochMilli(endDate.atStartOfDay(openAiVM.zoneId).toInstant().toEpochMilli())
             returnDateSet = true
         }, config = calendarConfig)
 
         ClockDialog(state = clockState2, selection = ClockSelection.HoursMinutes {hours, minutes ->
-            openAiVM.returnHour = hours
-            openAiVM.returnMinute = minutes
+            openAiVM.returnEpochTime = openAiVM.returnEpochTime?.plusMillis((hours * 3600000).toLong())
+            openAiVM.returnEpochTime = openAiVM.returnEpochTime?.plusMillis((minutes * 60000).toLong())
+            openAiVM.returnTimeSet = true
         })
 
         ClockDialog(state = clockState, selection = ClockSelection.HoursMinutes {hours, minutes ->
-            openAiVM.departHour = hours
-            openAiVM.departMinute = minutes
+            openAiVM.departEpochTime = openAiVM.departEpochTime?.plusMillis((hours * 3600000).toLong())
+            openAiVM.departEpochTime = openAiVM.departEpochTime?.plusMillis((minutes * 60000).toLong())
+            openAiVM.departTimeSet = true
         })
 
         LazyColumn() {
@@ -210,8 +206,8 @@ fun UserInfoScreen(
             item {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if (openAiVM.departDate!=null && openAiVM.returnDate!=null){
-                    if (Period.between(openAiVM?.departDate,openAiVM?.returnDate).days<1){
+                if (openAiVM.departEpochTime!=null && openAiVM.returnEpochTime!=null){
+                    if (Period.between(openAiVM?.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),openAiVM?.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1){
                         Text(text = "What is your estimated departure time?")
 
 
@@ -234,21 +230,13 @@ fun UserInfoScreen(
                 Row (modifier = Modifier.height(40.dp)) {
                     Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_right_24), contentDescription = null)
                     if (departDateSet){
-                        Text(text = " ${openAiVM?.departDate}")
-                        if ((Period.between(openAiVM?.departDate,openAiVM?.returnDate).days<1)&&(openAiVM.departHour!=null)&&(openAiVM?.departMinute!=null)){
-                            var amORpm: String = "AM"
-                            var printHour: Int = openAiVM.departHour!!
-                            var printMinutes: String = openAiVM.departMinute.toString()
-                            if (openAiVM.departHour!! >11){
-                                amORpm = "PM"
-                                if (openAiVM.departHour!! >12) {
-                                    printHour -= 12
-                                }
+                        Text(text = " ${openAiVM?.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()}")
+                        if ((Period.between(openAiVM?.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),openAiVM?.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1)&&(openAiVM.departEpochTime!=null)){
+                            if (openAiVM.departTimeSet){
+                                var unixTime = openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalTime()
+                                val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
+                                Text(text = " @ ${unixTime.format(dtf)}")
                             }
-                            if (openAiVM.departMinute!! <10){
-                                printMinutes = "0$printMinutes"
-                            }
-                            Text(text = " @ $printHour:$printMinutes $amORpm")
                         }
                     }
                 }
@@ -260,21 +248,13 @@ fun UserInfoScreen(
                 Row (modifier = Modifier.height(40.dp)) {
                     Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_left_24), contentDescription = null)
                     if (returnDateSet) {
-                        Text(text = " ${openAiVM.returnDate}")
-                        if ((Period.between(openAiVM.departDate,openAiVM.returnDate).days<1)&&(openAiVM.returnHour!=null)&&(openAiVM.returnMinute!=null)){
-                            var amORpm: String = "AM"
-                            var printHour: Int = openAiVM.returnHour!!
-                            var printMinutes: String = openAiVM.returnMinute.toString()
-                            if (openAiVM.returnHour!! >11){
-                                amORpm = "PM"
-                                if (openAiVM.returnHour!! >12) {
-                                    printHour -= 12
-                                }
+                        Text(text = " ${openAiVM?.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()}")
+                        if ((Period.between(openAiVM?.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),openAiVM?.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1)&&(openAiVM.returnEpochTime!=null)){
+                            if (openAiVM.returnTimeSet){
+                                var unixTime = openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalTime()
+                                val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
+                                Text(text = " @ ${unixTime.format(dtf)}")
                             }
-                            if (openAiVM.returnMinute!! <10){
-                                printMinutes = "0$printMinutes"
-                            }
-                            Text(text = " @ $printHour:$printMinutes $amORpm")
                         }
                     }
                 }

@@ -26,8 +26,7 @@ import com.google.maps.android.compose.rememberMarkerState
 @Composable
 fun MapScreen(
     modifier: Modifier = Modifier,
-    onNext: ()-> Unit = {},
-    intentOnClick: () -> Unit,
+    onNext: ()-> Unit = {}
 ) {
     val gcc = LatLng(41.155298, -80.079247)
     val cameraPosition = rememberCameraPositionState() {
@@ -40,11 +39,6 @@ fun MapScreen(
         ) {
             Text("Go to Results Screen")
         }
-        
-        Button(onClick = intentOnClick) {
-            Text(text = "Go to maps")
-        }
-
 
         GoogleMap(
             modifier = modifier.fillMaxSize(),

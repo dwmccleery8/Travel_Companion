@@ -39,7 +39,9 @@ class MainActivity() : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TravelCompanionApp(LocalContext.current, intentOnClick = {intentOnClick()})
+                    TravelCompanionApp(LocalContext.current, intentOnClick = { lat:Double, long:Double ->
+                        intentOnClick(lat,long)
+                    })
 //                    WeatherScreen()
 //                    AddressAutoCompleteScreen()
 
@@ -48,7 +50,10 @@ class MainActivity() : ComponentActivity() {
         }
     }
 
-    fun intentOnClick(){
+    fun intentOnClick(lat: Double, long: Double): Unit{
+        intentVM.lat = lat
+        intentVM.long = long
+        intentVM.updateUri()
         val gmmIntentUri = Uri.parse(intentVM.uri)
         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
         mapIntent.setPackage("com.google.android.apps.maps")
