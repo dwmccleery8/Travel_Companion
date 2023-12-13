@@ -67,19 +67,27 @@ fun WeatherScreen(
     val isHourly = openAiVM.isHourly
     val directionsUiState = directionsVM.directionsUIState
     var durationText = ""
+    val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
+    val arrivalTime = openAiVM.departEpochTime?.plusMillis(60000 * convertDuration(durationText))?.epochSecond
+
+    val currentTime = System.currentTimeMillis() / 1000L
+    val howManyHours = (arrivalTime?.minus(currentTime))?.div(3600)
+    val hoursInt = howManyHours?.toInt()
+
 
 
     when (weatherUiState) {
         is WeatherUiState.Success -> {
             val index = weatherIcons.indexOfFirst {
                 if (isHourly) {
-                    it.iconID == weatherUiState.weatherHourly.data[0].weather.icon
+                    it.iconID == weatherUiState.weatherHourly.data[hoursInt!!].weather.icon
 
                 } else {
                     it.iconID == weatherUiState.weatherDaily.data[0].weather.icon
 
                 }
             }
+            println(weatherUiState.weatherHourly.data.size)
 
             when(directionsUiState) {
                 is DirectionsUiState.Success -> {
@@ -105,14 +113,11 @@ fun WeatherScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text("Travel Time: $durationText")
-                    val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
-
                     Text("Approximate Time of Arrival: ${
-                        openAiVM.departEpochTime?.plusMillis(60000 * convertDuration(durationText))
-                            ?.atZone(openAiVM.zoneId)
+                        openAiVM.departEpochTime?.plusMillis(60000 * convertDuration(durationText))?.atZone(openAiVM.zoneId)
                             ?.toLocalTime()?.format(dtf)
                     }")
-                    Text("Weather Conditions Upon Arrival", fontSize = 20.sp)
+                    Text("Weather Conditions Upon Arrival" , fontSize = 20.sp)
 
                     if (weatherUiState.weatherHourly.state_code[0].isDigit()) {
                         Text(
@@ -127,12 +132,12 @@ fun WeatherScreen(
                         Text(weatherUiState.weatherHourly.country_code)
                     }
                     Text(
-                        floor(weatherUiState.weatherHourly.data[0].temp).toInt()
+                        floor(weatherUiState.weatherHourly.data[hoursInt!!].temp).toInt()
                             .toString() + "\u2109",
                         fontSize = 48.sp
                     )
                     Text(
-                        "Feels like: " + floor(weatherUiState.weatherHourly.data[0].app_temp).toInt()
+                        "Feels like: " + floor(weatherUiState.weatherHourly.data[hoursInt].app_temp).toInt()
                             .toString() + "\u2109"
                     )
 
@@ -141,8 +146,8 @@ fun WeatherScreen(
                         contentDescription = null,
                         modifier = modifier.size(150.dp),
                     )
-                    Text(weatherUiState.weatherHourly.data[0].weather.description)
-                    Text("Precipitation Chance: " + weatherUiState.weatherHourly.data[0].pop.toString() + "%")
+                    Text(weatherUiState.weatherHourly.data[hoursInt].weather.description)
+                    Text("Precipitation Chance: " + weatherUiState.weatherHourly.data[hoursInt].pop.toString() + "%")
                     Spacer(modifier = modifier.height(16.dp))
                     passVars(openAiVM)
                     openAiVM.getAnalysis()

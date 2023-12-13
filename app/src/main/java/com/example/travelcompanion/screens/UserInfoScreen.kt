@@ -69,7 +69,7 @@ fun UserInfoScreen(
     val clockState2 = rememberUseCaseState()
     val calendarConfig = remember {
         CalendarConfig(
-            boundary = (LocalDate.now()..LocalDate.now().plusDays(10)),
+            boundary = (LocalDate.now()..LocalDate.now().plusDays(9)),
 
         )
     }

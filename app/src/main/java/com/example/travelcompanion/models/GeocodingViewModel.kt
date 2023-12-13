@@ -23,10 +23,6 @@ class GeocodingViewModel : ViewModel() {
     var OriginAddressText by mutableStateOf("origin")
     var DestinationAddressText by mutableStateOf("destination")
     var isVMOrigin by mutableStateOf(true)
-//    var startingLat by mutableDoubleStateOf(0.0)
-//    var startingLon by mutableDoubleStateOf(0.0)
-//    var destinationLat by mutableDoubleStateOf(0.0)
-//    var destinationLon by mutableDoubleStateOf(0.0)
 
     init {
         getGeocodingData()
