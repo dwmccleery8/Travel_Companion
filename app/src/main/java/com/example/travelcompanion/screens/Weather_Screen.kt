@@ -3,13 +3,11 @@ package com.example.travelcompanion.screens
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -63,9 +61,9 @@ fun WeatherScreen(
     val weatherVM = viewModel<WeatherViewModel>()
     val weatherUiState = weatherVM.weatherUIState
     val weatherIcons = Datasource().loadIcons()
-    val isHourly: Boolean = false
+    val isHourly = false
     val directionsUiState = directionsVM.directionsUIState
-    var durationText: String = ""
+    var durationText = ""
 
 
     when (weatherUiState) {
@@ -287,7 +285,7 @@ fun WeatherCard(
                         + floor(dayData.min_temp).toInt()
                     .toString() + "\u2109"
             )
-            Row() {
+            Row {
                 Image(
                     painterResource(id = R.drawable.rain),
                     modifier = modifier.size(24.dp),

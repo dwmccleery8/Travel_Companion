@@ -3,10 +3,7 @@ package com.example.travelcompanion.apis
 import com.example.travelcompanion.models.DirectionsObjects
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
-import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -30,18 +27,6 @@ object DirectionsAPI {
             ignoreUnknownKeys = true
         }.asConverterFactory("application/json".toMediaType()))
         .baseUrl(base_url)
-        .client(
-            OkHttpClient.Builder()
-            .addInterceptor(object : Interceptor {
-                override fun intercept(chain: Interceptor.Chain): Response {
-                    val request = chain.request()
-                    val url = request.url
-                    println("Request URL: $url")
-                    return chain.proceed(request)
-                }
-            })
-            .build())
-
         .build()
 
     val retrofitService: DirectionsAPIService by lazy {

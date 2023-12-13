@@ -31,7 +31,6 @@ import com.example.travelcompanion.models.DirectionsViewModel
 import com.example.travelcompanion.models.GeocodingUiState
 import com.example.travelcompanion.models.GeocodingViewModel
 import com.example.travelcompanion.models.ResultAddress
-import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable

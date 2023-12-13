@@ -2,12 +2,10 @@ package com.example.travelcompanion.models
 
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.travelcompanion.apis.DirectionsAPI
 import com.example.travelcompanion.apis.GeocodingAPI
 import kotlinx.coroutines.launch
 

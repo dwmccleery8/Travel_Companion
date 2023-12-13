@@ -3,7 +3,6 @@ package com.example.travelcompanion.models
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,7 +11,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.travelcompanion.apis.OpenAiApi
 import kotlinx.coroutines.launch
 import java.time.Instant
-import java.time.LocalDate
 import java.time.Period
 import java.time.ZoneId
 
@@ -64,12 +62,11 @@ class OpenAiVM : ViewModel() {
     }
 
     fun readyToGo(): Boolean{
-        if ((tripType!=null)&&(amountOfPeople>0)&&(returnEpochTime!=null)&&(departEpochTime!=null)){
-            if (Period.between(departEpochTime!!.atZone(zoneId).toLocalDate(),returnEpochTime!!.atZone(zoneId).toLocalDate()).days<1){
-                return (departTimeSet)&&(returnTimeSet)
-            }
-            else{
-                return true
+        if ((amountOfPeople>0)&&(returnEpochTime!=null)&&(departEpochTime!=null)){
+            return if (Period.between(departEpochTime!!.atZone(zoneId).toLocalDate(),returnEpochTime!!.atZone(zoneId).toLocalDate()).days<1){
+                (departTimeSet)&&(returnTimeSet)
+            } else{
+                true
             }
         }
         return false
@@ -78,11 +75,10 @@ class OpenAiVM : ViewModel() {
     fun getAnalysis(){
 
         viewModelScope.launch {
-            var isOutsideText: String
-            if (isOutside){
-                isOutsideText = "outside"
+            val isOutsideText: String = if (isOutside){
+                "outside"
             }else{
-                isOutsideText = "indoors"
+                "indoors"
             }
 
             try{

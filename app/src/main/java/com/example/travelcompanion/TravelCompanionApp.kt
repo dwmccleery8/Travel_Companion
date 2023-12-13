@@ -34,7 +34,7 @@ sealed class NavScreens(val route: String) {
 @Composable
 fun TravelCompanionApp(
     context: Context,
-    intentOnClick: ()-> Unit,
+    intentOnClick: (Double, Double)-> Unit,
     navController: NavHostController = rememberNavController(),
     openAiVM : OpenAiVM = viewModel()
 

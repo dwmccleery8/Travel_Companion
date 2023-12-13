@@ -109,7 +109,7 @@ fun UserInfoScreen(
             openAiVM.departTimeSet = true
         })
 
-        LazyColumn() {
+        LazyColumn {
             item{
                 Text(
                     text = "Tell us a little bit about your trip...",
@@ -178,7 +178,7 @@ fun UserInfoScreen(
                         bottom = 5.dp
                     ))
 
-                TextField(value = openAiVM?.amountOfPeople.toString(), onValueChange = {
+                TextField(value = openAiVM.amountOfPeople.toString(), onValueChange = {
                     openAiVM.amountOfPeople = it.toInt()
                 },
                     modifier = Modifier.fillMaxWidth(),
@@ -207,7 +207,8 @@ fun UserInfoScreen(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 if (openAiVM.departEpochTime!=null && openAiVM.returnEpochTime!=null){
-                    if (Period.between(openAiVM?.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),openAiVM?.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1){
+                    if (Period.between(openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),
+                            openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1){
                         Text(text = "What is your estimated departure time?")
 
 
@@ -230,10 +231,11 @@ fun UserInfoScreen(
                 Row (modifier = Modifier.height(40.dp)) {
                     Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_right_24), contentDescription = null)
                     if (departDateSet){
-                        Text(text = " ${openAiVM?.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()}")
-                        if ((Period.between(openAiVM?.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),openAiVM?.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1)&&(openAiVM.departEpochTime!=null)){
+                        Text(text = " ${openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()}")
+                        if ((Period.between(openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),
+                                openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1)&&(openAiVM.departEpochTime!=null)){
                             if (openAiVM.departTimeSet){
-                                var unixTime = openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalTime()
+                                val unixTime = openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalTime()
                                 val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
                                 Text(text = " @ ${unixTime.format(dtf)}")
                             }
@@ -248,10 +250,11 @@ fun UserInfoScreen(
                 Row (modifier = Modifier.height(40.dp)) {
                     Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_left_24), contentDescription = null)
                     if (returnDateSet) {
-                        Text(text = " ${openAiVM?.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()}")
-                        if ((Period.between(openAiVM?.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),openAiVM?.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1)&&(openAiVM.returnEpochTime!=null)){
+                        Text(text = " ${openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()}")
+                        if ((Period.between(openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),
+                                openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1)&&(openAiVM.returnEpochTime!=null)){
                             if (openAiVM.returnTimeSet){
-                                var unixTime = openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalTime()
+                                val unixTime = openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalTime()
                                 val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
                                 Text(text = " @ ${unixTime.format(dtf)}")
                             }
@@ -268,11 +271,10 @@ fun UserInfoScreen(
                         bottom = 5.dp
                     ))
 
-                var usefulString: String
-                if (openAiVM.otherUsefulInfo!=null){
-                    usefulString = openAiVM.otherUsefulInfo!!
+                val usefulString: String = if (openAiVM.otherUsefulInfo!=null){
+                    openAiVM.otherUsefulInfo!!
                 }else{
-                    usefulString = ""
+                    ""
                 }
                 TextField(value = usefulString, onValueChange = {
                     openAiVM.otherUsefulInfo = it
@@ -317,13 +319,10 @@ fun UserInfoScreen(
             item {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                var alphaValue: Float
-
-                if (openAiVM.readyToGo()){
-                    alphaValue = 1.0f
-                }
-                else{
-                    alphaValue = 0.5f
+                val alphaValue: Float = if (openAiVM.readyToGo()){
+                    1.0f
+                } else{
+                    0.5f
                 }
 
 

@@ -50,7 +50,7 @@ class MainActivity() : ComponentActivity() {
         }
     }
 
-    fun intentOnClick(lat: Double, long: Double): Unit{
+    fun intentOnClick(lat: Double, long: Double) {
         intentVM.lat = lat
         intentVM.long = long
         intentVM.updateUri()

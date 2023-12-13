@@ -1,19 +1,11 @@
 package com.example.travelcompanion.screens
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.content.Context
-import android.net.Uri
-import android.os.Build
-import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.travelcompanion.models.IntentViewModel
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
