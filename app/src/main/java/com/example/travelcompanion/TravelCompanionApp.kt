@@ -70,13 +70,16 @@ fun TravelCompanionApp(
         //third screen, results
         composable(route = NavScreens.WeatherScreen.route) {
             WeatherScreen(
-
                 onNext = {
                     navController.popBackStack(route = NavScreens.TitleScreen.route, inclusive = false)
                     openAiVM.reset()
                 },
-                openAiVM = openAiVM, directionsVM = directionsVM, weatherVM = weatherVM
-            )
+                openAiVM = openAiVM,
+                weatherVM = weatherVM,
+                directionsVM = directionsVM,
+                intentOnClick = { lat, long ->
+                    intentOnClick(lat, long)
+                })
         }
     }
 

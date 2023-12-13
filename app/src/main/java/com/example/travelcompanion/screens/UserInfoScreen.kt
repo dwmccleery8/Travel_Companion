@@ -46,10 +46,13 @@ import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockSelection
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
+import kotlin.time.DurationUnit
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -58,15 +61,18 @@ import java.time.format.DateTimeFormatter
 fun UserInfoScreen(
     openAiVM: OpenAiVM,
     context: Context,
-    onNext: ()-> Unit = {}
+    onNext: () -> Unit = {}
 ) {
 
     val calendarState = rememberUseCaseState()
     val clockState = rememberUseCaseState()
     val clockState2 = rememberUseCaseState()
-    val calendarConfig = remember{CalendarConfig(
-        boundary = (LocalDate.now()..LocalDate.now().plusDays(16))
-    )}
+    val calendarConfig = remember {
+        CalendarConfig(
+            boundary = (LocalDate.now()..LocalDate.now().plusDays(10)),
+
+        )
+    }
     val tripTypeOptions = arrayOf("Business", "Leisure")
     var expandedVenue by remember { mutableStateOf(false) }
     var returnDateSet by remember { mutableStateOf(false) }
@@ -89,28 +95,40 @@ fun UserInfoScreen(
             .padding(32.dp),
         contentAlignment = Alignment.Center
     ) {
-        CalendarDialog(state = calendarState, selection = CalendarSelection.Period {startDate,endDate ->
-            //date.atStartOfDay(zoneId).toInstant().toEpochMilli();
-            openAiVM.departEpochTime = Instant.ofEpochMilli(startDate.atStartOfDay(openAiVM.zoneId).toInstant().toEpochMilli())
-            departDateSet = true
-            openAiVM.returnEpochTime = Instant.ofEpochMilli(endDate.atStartOfDay(openAiVM.zoneId).toInstant().toEpochMilli())
-            returnDateSet = true
-        }, config = calendarConfig)
+        CalendarDialog(
+            state = calendarState,
+            selection = CalendarSelection.Period { startDate, endDate ->
+                //date.atStartOfDay(zoneId).toInstant().toEpochMilli();
+                openAiVM.departEpochTime = Instant.ofEpochMilli(
+                    startDate.atStartOfDay(openAiVM.zoneId).toInstant().toEpochMilli()
+                )
+                departDateSet = true
+                openAiVM.returnEpochTime = Instant.ofEpochMilli(
+                    endDate.atStartOfDay(openAiVM.zoneId).toInstant().toEpochMilli()
+                )
+                returnDateSet = true
+            },
+            config = calendarConfig
+        )
 
-        ClockDialog(state = clockState2, selection = ClockSelection.HoursMinutes {hours, minutes ->
-            openAiVM.returnEpochTime = openAiVM.returnEpochTime?.plusMillis((hours * 3600000).toLong())
-            openAiVM.returnEpochTime = openAiVM.returnEpochTime?.plusMillis((minutes * 60000).toLong())
+        ClockDialog(state = clockState2, selection = ClockSelection.HoursMinutes { hours, minutes ->
+            openAiVM.returnEpochTime =
+                openAiVM.returnEpochTime?.plusMillis((hours * 3600000).toLong())
+            openAiVM.returnEpochTime =
+                openAiVM.returnEpochTime?.plusMillis((minutes * 60000).toLong())
             openAiVM.returnTimeSet = true
         })
 
-        ClockDialog(state = clockState, selection = ClockSelection.HoursMinutes {hours, minutes ->
-            openAiVM.departEpochTime = openAiVM.departEpochTime?.plusMillis((hours * 3600000).toLong())
-            openAiVM.departEpochTime = openAiVM.departEpochTime?.plusMillis((minutes * 60000).toLong())
+        ClockDialog(state = clockState, selection = ClockSelection.HoursMinutes { hours, minutes ->
+            openAiVM.departEpochTime =
+                openAiVM.departEpochTime?.plusMillis((hours * 3600000).toLong())
+            openAiVM.departEpochTime =
+                openAiVM.departEpochTime?.plusMillis((minutes * 60000).toLong())
             openAiVM.departTimeSet = true
         })
 
         LazyColumn {
-            item{
+            item {
                 Text(
                     text = "Tell us a little bit about your trip...",
                     textAlign = TextAlign.Center,
@@ -123,10 +141,12 @@ fun UserInfoScreen(
             item {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(text = "Are you traveling for business or leisure?",
+                Text(
+                    text = "Are you traveling for business or leisure?",
                     modifier = Modifier.padding(
                         bottom = 5.dp
-                    ))
+                    )
+                )
 
                 ExposedDropdownMenuBox(
                     expanded = expandedVenue,
@@ -167,29 +187,36 @@ fun UserInfoScreen(
                 Text(text = "Outdoors?")
                 Checkbox(checked = openAiVM.isOutside, onCheckedChange = {
                     openAiVM.isOutside = it
-                } )
+                })
             }
 
             item {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(text = "How many people are going?",
+                Text(
+                    text = "How many people are going?",
                     modifier = Modifier.padding(
                         bottom = 5.dp
-                    ))
+                    )
+                )
 
-                TextField(value = openAiVM.amountOfPeople.toString(), onValueChange = {
-                    openAiVM.amountOfPeople = it.toInt()
-                },
+                TextField(
+                    value = openAiVM.amountOfPeople.toString(), onValueChange = {
+                        openAiVM.amountOfPeople = it.toInt()
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    label = {Text("Amount of People:")},
+                    label = { Text("Amount of People:") },
                     singleLine = true,
                     leadingIcon = {
-                        Icon(painter = painterResource(id = R.drawable.baseline_person_outline_24),
-                            contentDescription = null)
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_person_outline_24),
+                            contentDescription = null
+                        )
                     },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done)
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    )
                 )
             }
 
@@ -198,7 +225,7 @@ fun UserInfoScreen(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(text = "What is the duration of your trip?")
-                Button(onClick = {calendarState.show()}){
+                Button(onClick = { calendarState.show() }) {
                     Text(text = "Select Date")
                 }
             }
@@ -206,21 +233,27 @@ fun UserInfoScreen(
             item {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if (openAiVM.departEpochTime!=null && openAiVM.returnEpochTime!=null){
-                    if (Period.between(openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),
-                            openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1){
+                if (openAiVM.departEpochTime != null && openAiVM.returnEpochTime != null) {
+                    if (Period.between(
+                            openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),
+                            openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()
+                        ).days < 1
+                    ) {
+                        openAiVM.isHourly = true
                         Text(text = "What is your estimated departure time?")
 
 
-                        Button(onClick = {clockState.show()}){
+                        Button(onClick = { clockState.show() }) {
                             Text(text = "Select Departure Time")
                         }
 
                         Text(text = "What is your estimated return time?")
 
-                        Button(onClick = {clockState2.show()}){
+                        Button(onClick = { clockState2.show() }) {
                             Text(text = "Select Return Time")
                         }
+                    } else {
+                        openAiVM.isHourly = false
                     }
                 }
             }
@@ -228,14 +261,25 @@ fun UserInfoScreen(
             item {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Row (modifier = Modifier.height(40.dp)) {
-                    Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_right_24), contentDescription = null)
-                    if (departDateSet){
-                        Text(text = " ${openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()}")
-                        if ((Period.between(openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),
-                                openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1)&&(openAiVM.departEpochTime!=null)){
-                            if (openAiVM.departTimeSet){
-                                val unixTime = openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalTime()
+                Row(modifier = Modifier.height(40.dp)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_arrow_circle_right_24),
+                        contentDescription = null
+                    )
+                    if (departDateSet) {
+                        Text(
+                            text = " ${
+                                openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()
+                            }"
+                        )
+                        if ((Period.between(
+                                openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),
+                                openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()
+                            ).days < 1) && (openAiVM.departEpochTime != null)
+                        ) {
+                            if (openAiVM.departTimeSet) {
+                                val unixTime =
+                                    openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalTime()
                                 val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
                                 Text(text = " @ ${unixTime.format(dtf)}")
                             }
@@ -247,14 +291,25 @@ fun UserInfoScreen(
             item {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Row (modifier = Modifier.height(40.dp)) {
-                    Icon(painter = painterResource(id = R.drawable.baseline_arrow_circle_left_24), contentDescription = null)
+                Row(modifier = Modifier.height(40.dp)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_arrow_circle_left_24),
+                        contentDescription = null
+                    )
                     if (returnDateSet) {
-                        Text(text = " ${openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()}")
-                        if ((Period.between(openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),
-                                openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()).days<1)&&(openAiVM.returnEpochTime!=null)){
-                            if (openAiVM.returnTimeSet){
-                                val unixTime = openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalTime()
+                        Text(
+                            text = " ${
+                                openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()
+                            }"
+                        )
+                        if ((Period.between(
+                                openAiVM.departEpochTime!!.atZone(openAiVM.zoneId).toLocalDate(),
+                                openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalDate()
+                            ).days < 1) && (openAiVM.returnEpochTime != null)
+                        ) {
+                            if (openAiVM.returnTimeSet) {
+                                val unixTime =
+                                    openAiVM.returnEpochTime!!.atZone(openAiVM.zoneId).toLocalTime()
                                 val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
                                 Text(text = " @ ${unixTime.format(dtf)}")
                             }
@@ -266,28 +321,35 @@ fun UserInfoScreen(
             item {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(text = "Any other useful information to know?",
+                Text(
+                    text = "Any other useful information to know?",
                     modifier = Modifier.padding(
                         bottom = 5.dp
-                    ))
+                    )
+                )
 
-                val usefulString: String = if (openAiVM.otherUsefulInfo!=null){
+                val usefulString: String = if (openAiVM.otherUsefulInfo != null) {
                     openAiVM.otherUsefulInfo!!
-                }else{
+                } else {
                     ""
                 }
-                TextField(value = usefulString, onValueChange = {
-                    openAiVM.otherUsefulInfo = it
-                },
+                TextField(
+                    value = usefulString, onValueChange = {
+                        openAiVM.otherUsefulInfo = it
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    label = {Text("Other Information:")},
+                    label = { Text("Other Information:") },
                     singleLine = true,
                     leadingIcon = {
-                        Icon(painter = painterResource(id = R.drawable.baseline_info_24),
-                            contentDescription = null)
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_info_24),
+                            contentDescription = null
+                        )
                     },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done)
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    )
                 )
             }
 
@@ -319,9 +381,9 @@ fun UserInfoScreen(
             item {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                val alphaValue: Float = if (openAiVM.readyToGo()){
+                val alphaValue: Float = if (openAiVM.readyToGo()) {
                     1.0f
-                } else{
+                } else {
                     0.5f
                 }
 

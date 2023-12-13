@@ -39,6 +39,7 @@ import com.example.travelcompanion.models.OpenAiVM
 import com.example.travelcompanion.models.WeatherUiState
 import com.example.travelcompanion.models.WeatherViewModel
 import com.example.travelcompanion.models.getBetterDate
+import java.time.format.DateTimeFormatter
 import kotlin.math.floor
 
 
@@ -49,8 +50,10 @@ fun WeatherScreen(
     onNext: () -> Unit = {},
     openAiVM: OpenAiVM,
     directionsVM: DirectionsViewModel,
-    weatherVM: WeatherViewModel
-) {
+    weatherVM: WeatherViewModel,
+    intentOnClick: (lat: Double, long: Double) -> Unit,
+
+    ) {
     Image(
         painter = painterResource(id = R.drawable.app_background),
         contentDescription = null,
@@ -61,7 +64,7 @@ fun WeatherScreen(
 
     val weatherUiState = weatherVM.weatherUIState
     val weatherIcons = Datasource().loadIcons()
-    val isHourly = false
+    val isHourly = openAiVM.isHourly
     val directionsUiState = directionsVM.directionsUIState
     var durationText = ""
 
@@ -102,7 +105,13 @@ fun WeatherScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text("Travel Time: $durationText")
-                    Text("Approximate Time of Arrival: 12:30 PM EST")
+                    val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
+
+                    Text("Approximate Time of Arrival: ${
+                        openAiVM.departEpochTime?.plusMillis(60000 * convertDuration(durationText))
+                            ?.atZone(openAiVM.zoneId)
+                            ?.toLocalTime()?.format(dtf)
+                    }")
                     Text("Weather Conditions Upon Arrival", fontSize = 20.sp)
 
                     if (weatherUiState.weatherHourly.state_code[0].isDigit()) {
@@ -135,13 +144,40 @@ fun WeatherScreen(
                     Text(weatherUiState.weatherHourly.data[0].weather.description)
                     Text("Precipitation Chance: " + weatherUiState.weatherHourly.data[0].pop.toString() + "%")
                     Spacer(modifier = modifier.height(16.dp))
-                    Text("Items to Bring: ")
-                    Text("  \u25CF    Item 1")
-                    Text("  \u25CF    Item 2")
-                    Text("  \u25CF    Item 3")
-                    Text("  \u25CF    Item 4")
+                    passVars(openAiVM)
+                    openAiVM.getAnalysis()
+                    if (!openAiVM.responseReceived){
+                        when (val openAiUIState = openAiVM.openAiState) {
+                            is OpenAiState.Success -> {
+                                openAiVM.chatGPTResponse = openAiUIState.summary
+                                openAiVM.responseReceived = true
+                                Text(
+                                    "Items to Bring: \n" + openAiVM.chatGPTResponse,
+                                    fontSize = 20.sp
+                                )
+                            }
+
+                            is OpenAiState.Loading -> {
+                                Text("Loading Travel Analysis", fontSize = 30.sp)
+                            }
+
+                            is OpenAiState.Error -> {
+                                Text("Service Error", fontSize = 30.sp)
+                            }
+                        }
+                    }else{
+                        Text("Items to Bring: \n" + openAiVM.chatGPTResponse, fontSize = 20.sp)
+
+
+                    }
+
+//                    Text("Items to Bring: ")
+//                    Text("  \u25CF    Item 1")
+//                    Text("  \u25CF    Item 2")
+//                    Text("  \u25CF    Item 3")
+//                    Text("  \u25CF    Item 4")
                     Spacer(modifier = modifier.height(8.dp))
-                    Button(onClick = { /*TODO*/ }) {
+                    Button(onClick = {intentOnClick(weatherVM.weatherLat,weatherVM.weatherLon)}) {
                         Text("Let's Go!")
                     }
                     Button(
@@ -215,18 +251,29 @@ fun WeatherScreen(
 //                    Text("Items to Bring: ")
                     passVars(openAiVM)
                     openAiVM.getAnalysis()
-                    when (val openAiUIState = openAiVM.openAiState) {
-                        is OpenAiState.Success -> {
-                            Text("Items to Bring: \n" + openAiUIState.summary, fontSize = 20.sp)
-                        }
+                    if (!openAiVM.responseReceived){
+                        when (val openAiUIState = openAiVM.openAiState) {
+                            is OpenAiState.Success -> {
+                                openAiVM.chatGPTResponse = openAiUIState.summary
+                                openAiVM.responseReceived = true
+                                Text(
+                                    "Items to Bring: \n" + openAiVM.chatGPTResponse,
+                                    fontSize = 20.sp
+                                )
+                            }
 
-                        is OpenAiState.Loading -> {
-                            Text("Loading Travel Analysis", fontSize = 30.sp)
-                        }
+                            is OpenAiState.Loading -> {
+                                Text("Loading Travel Analysis", fontSize = 30.sp)
+                            }
 
-                        is OpenAiState.Error -> {
-                            Text("Service Error", fontSize = 30.sp)
+                            is OpenAiState.Error -> {
+                                Text("Service Error", fontSize = 30.sp)
+                            }
                         }
+                    }else{
+                        Text("Items to Bring: \n" + openAiVM.chatGPTResponse, fontSize = 20.sp)
+
+
                     }
 //                    Spacer(modifier = Modifier.height(10.dp))
 //                    Text("  \u25CF    Item 1")
@@ -234,7 +281,7 @@ fun WeatherScreen(
 //                    Text("  \u25CF    Item 3")
 //                    Text("  \u25CF    Item 4")
                     Spacer(modifier = modifier.height(8.dp))
-                    Button(onClick = { /*TODO*/ }) {
+                    Button(onClick = {intentOnClick(weatherVM.weatherLat,weatherVM.weatherLon)}) {
                         Text("Let's Go!")
                     }
                     Button(
@@ -303,4 +350,33 @@ fun WeatherCard(
 fun passVars(openAiVM: OpenAiVM) {
     openAiVM.absoluteLow = 20.0
     openAiVM.absoluteHigh = 30.0
+}
+
+fun convertDuration(duration: String): Long {
+    if (duration.isNotEmpty()) {
+        var numHours: Int = 0
+        var numMinutes: Int = 0
+        var minutesString: String = duration
+        if (duration.contains("hours")) {
+            if (duration[1].isDigit()) {
+                numHours = duration[0].toString().plus(duration[1].toString()).toInt()
+                minutesString = duration.removeRange(0,9)
+            } else {
+                numHours = duration[0].toString().toInt()
+                minutesString = duration.removeRange(0,8)
+            }
+        }
+        if (minutesString[1].isDigit()) {
+            minutesString = minutesString.removeRange(2,minutesString.length)
+            numMinutes = minutesString.toInt()
+        } else {
+            numMinutes = minutesString[0].toString().toInt()
+        }
+        numMinutes += (60 * numHours)
+
+        return numMinutes.toLong()
+
+    } else {
+        return 0
+    }
 }

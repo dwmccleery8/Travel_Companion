@@ -38,6 +38,8 @@ class OpenAiVM : ViewModel() {
     var departTimeSet: Boolean by mutableStateOf(false)
     var returnTimeSet: Boolean by mutableStateOf(false)
     var responseReceived: Boolean by mutableStateOf(false)
+    var isHourly: Boolean by mutableStateOf(false)
+
 
     var openAiState: OpenAiState by mutableStateOf(OpenAiState.Loading)
         private set
@@ -59,6 +61,7 @@ class OpenAiVM : ViewModel() {
         departTimeSet = false
         returnTimeSet = false
         openAiState = OpenAiState.Loading
+        isHourly = false
     }
 
     fun readyToGo(): Boolean{
@@ -71,6 +74,7 @@ class OpenAiVM : ViewModel() {
         }
         return false
     }
+
 
     fun getAnalysis(){
 
