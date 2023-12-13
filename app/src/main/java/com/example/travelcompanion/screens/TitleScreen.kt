@@ -1,5 +1,6 @@
 package com.example.travelcompanion.screens
 
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -15,12 +16,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -43,11 +49,13 @@ fun TitleScreen(
     val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = 8f,
+        targetValue = 4f,
         animationSpec = infiniteRepeatable(tween(1000), RepeatMode.Reverse),
         label = "scale"
     )
-    Box(modifier = Modifier.fillMaxSize().padding(top = 300.dp)) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(bottom = 600.dp)) {
         Text(
             text = "Hello",
             modifier = Modifier
@@ -63,6 +71,16 @@ fun TitleScreen(
         )
     }
 
+    val infiniteTransition2 = rememberInfiniteTransition()
+
+    val scale2 by infiniteTransition2.animateColor(
+        initialValue = Color(0x7F52FF),
+        targetValue = Color.Blue,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
+    )
 
     Image(
         painter = painterResource(id = R.drawable.app_background),
@@ -101,10 +119,11 @@ fun TitleScreen(
             Column(modifier = Modifier.weight(1f)){}
 
             Column(modifier = Modifier.weight(1f)) {
-                Button(
+                OutlinedButton(
                     onClick = onNext,
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxSize(),
+                    colors = ButtonDefaults.buttonColors(scale2)
                 ) {
                     Text("Begin!")
                 }

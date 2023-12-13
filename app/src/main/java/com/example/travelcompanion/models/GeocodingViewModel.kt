@@ -29,7 +29,7 @@ class GeocodingViewModel : ViewModel() {
     }
 
     fun reset() {
-        geocodingUiState = GeocodingUiState.Loading
+//        geocodingUiState = GeocodingUiState.Loading
         OriginAddressText = "origin"
         DestinationAddressText = "destination"
         isVMOrigin = true
