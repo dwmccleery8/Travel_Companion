@@ -1,5 +1,6 @@
 package com.example.travelcompanion.screens
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.LinearEasing
@@ -38,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -101,7 +103,7 @@ fun WeatherScreen(
     intentOnClick: (lat: Double, long: Double) -> Unit,
     addressVM: GeocodingViewModel
 
-    ) {
+) {
     Image(
         painter = painterResource(id = R.drawable.app_background),
         contentDescription = null,
@@ -116,7 +118,12 @@ fun WeatherScreen(
     val directionsUiState = directionsVM.directionsUIState
     var durationText = ""
     val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
-    val arrivalTime = openAiVM.departEpochTime?.plusMillis(60000 * convertDuration(durationText, openAiVM))?.epochSecond
+    val arrivalTime = openAiVM.departEpochTime?.plusMillis(
+        60000 * convertDuration(
+            durationText,
+            openAiVM
+        )
+    )?.epochSecond
 
     val currentTime = System.currentTimeMillis() / 1000L
     val howManyHours = (arrivalTime?.minus(currentTime))?.div(3600)
@@ -141,7 +148,7 @@ fun WeatherScreen(
                 }
             }
 
-            when(directionsUiState) {
+            when (directionsUiState) {
                 is DirectionsUiState.Success -> {
                     durationText = if (directionsUiState.directions.routes.isNotEmpty()) {
                         directionsUiState.directions.routes[0].legs[0].duration.text
@@ -149,6 +156,7 @@ fun WeatherScreen(
                         "No valid routes found, try different addresses"
                     }
                 }
+
                 is DirectionsUiState.Error -> {
                     Text("Error")
                 }
@@ -169,11 +177,18 @@ fun WeatherScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text("Travel Time: $durationText")
-                    Text("Approximate Time of Arrival: ${
-                        openAiVM.departEpochTime?.plusMillis(60000 * convertDuration(durationText, openAiVM))?.atZone(openAiVM.zoneId)
-                            ?.toLocalTime()?.format(dtf)
-                    }")
-                    Text("Weather Conditions Upon Arrival" , fontSize = 20.sp)
+                    Text(
+                        "Approximate Time of Arrival: ${
+                            openAiVM.departEpochTime?.plusMillis(
+                                60000 * convertDuration(
+                                    durationText,
+                                    openAiVM
+                                )
+                            )?.atZone(openAiVM.zoneId)
+                                ?.toLocalTime()?.format(dtf)
+                        }"
+                    )
+                    Text("Weather Conditions Upon Arrival", fontSize = 20.sp)
 
                     if (weatherUiState.weatherHourly.state_code[0].isDigit()) {
                         Text(
@@ -212,7 +227,7 @@ fun WeatherScreen(
                     if (openAiVM.travelTime != 0) {
                         openAiVM.getAnalysis()
                     }
-                    if (!openAiVM.responseReceived){
+                    if (!openAiVM.responseReceived) {
                         when (val openAiUIState = openAiVM.openAiState) {
                             is OpenAiState.Success -> {
                                 openAiVM.chatGPTResponse = openAiUIState.summary
@@ -232,7 +247,7 @@ fun WeatherScreen(
                                 Text("Service Error", fontSize = 30.sp)
                             }
                         }
-                    }else{
+                    } else {
                         Text("Items to Bring: \n" + openAiVM.chatGPTResponse, fontSize = 20.sp)
 
 
@@ -247,7 +262,12 @@ fun WeatherScreen(
                     ShowMap(modifier, weatherVM, addressVM)
                     Spacer(modifier = modifier.height(8.dp))
 
-                    Button(onClick = {intentOnClick(weatherVM.weatherLat,weatherVM.weatherLon)}) {
+                    Button(onClick = {
+                        intentOnClick(
+                            weatherVM.weatherLat,
+                            weatherVM.weatherLon
+                        )
+                    }) {
                         Text("Let's Go!")
                     }
                     Button(
@@ -323,7 +343,7 @@ fun WeatherScreen(
                     }
 
                     Spacer(modifier = modifier.height(16.dp))
-                    val highTemps : MutableList<Double> = mutableListOf()
+                    val highTemps: MutableList<Double> = mutableListOf()
 
                     weatherUiState.weatherDaily.data.forEachIndexed { index, weatherDetailsDaily ->
                         if (index >= daysDifferenceDeparture && index <= daysDifferenceArrival!!) {
@@ -332,7 +352,7 @@ fun WeatherScreen(
                     }
                     openAiVM.absoluteHigh = highTemps.max()
 
-                    val lowTemps : MutableList<Double> = mutableListOf()
+                    val lowTemps: MutableList<Double> = mutableListOf()
 
                     weatherUiState.weatherDaily.data.forEachIndexed { index, weatherDetailsDaily ->
                         if (index >= daysDifferenceDeparture && index <= daysDifferenceArrival!!) {
@@ -344,7 +364,7 @@ fun WeatherScreen(
                     if (openAiVM.travelTime != 0) {
                         openAiVM.getAnalysis()
                     }
-                    if (!openAiVM.responseReceived){
+                    if (!openAiVM.responseReceived) {
                         when (val openAiUIState = openAiVM.openAiState) {
                             is OpenAiState.Success -> {
                                 openAiVM.chatGPTResponse = openAiUIState.summary
@@ -364,7 +384,7 @@ fun WeatherScreen(
                                 Text("Service Error", fontSize = 30.sp)
                             }
                         }
-                    }else{
+                    } else {
                         Text("Items to Bring: \n" + openAiVM.chatGPTResponse, fontSize = 20.sp)
 
 
@@ -377,7 +397,12 @@ fun WeatherScreen(
                     Spacer(modifier = modifier.height(8.dp))
                     ShowMap(modifier, weatherVM, addressVM)
                     Spacer(modifier = modifier.height(8.dp))
-                    Button(onClick = {intentOnClick(weatherVM.weatherLat,weatherVM.weatherLon)}) {
+                    Button(onClick = {
+                        intentOnClick(
+                            weatherVM.weatherLat,
+                            weatherVM.weatherLon
+                        )
+                    }) {
                         Text("Let's Go!")
                     }
                     Button(
@@ -441,6 +466,7 @@ fun WeatherCard(
         }
     }
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 fun convertDuration(duration: String, openAiVM: OpenAiVM): Long {
     if (duration.isNotEmpty()) {
@@ -450,14 +476,14 @@ fun convertDuration(duration: String, openAiVM: OpenAiVM): Long {
         if (duration.contains("hours")) {
             if (duration[1].isDigit()) {
                 numHours = duration[0].toString().plus(duration[1].toString()).toInt()
-                minutesString = duration.removeRange(0,9)
+                minutesString = duration.removeRange(0, 9)
             } else {
                 numHours = duration[0].toString().toInt()
-                minutesString = duration.removeRange(0,8)
+                minutesString = duration.removeRange(0, 8)
             }
         }
         if (minutesString[1].isDigit()) {
-            minutesString = minutesString.removeRange(2,minutesString.length)
+            minutesString = minutesString.removeRange(2, minutesString.length)
             numMinutes = minutesString.toInt()
         } else {
             numMinutes = minutesString[0].toString().toInt()
@@ -474,13 +500,20 @@ fun convertDuration(duration: String, openAiVM: OpenAiVM): Long {
 }
 
 @Composable
-fun ShowMap(modifier : Modifier, weatherVM: WeatherViewModel, addressVM: GeocodingViewModel ) {
+fun ShowMap(modifier: Modifier, weatherVM: WeatherViewModel, addressVM: GeocodingViewModel) {
     GoogleMap(
         modifier = modifier
             .fillMaxSize()
             .height(250.dp),
 
-        cameraPositionState = CameraPositionState(CameraPosition(LatLng(weatherVM.weatherLat, weatherVM.weatherLon), 12f, 1f, 1f)),
+        cameraPositionState = CameraPositionState(
+            CameraPosition(
+                LatLng(
+                    weatherVM.weatherLat,
+                    weatherVM.weatherLon
+                ), 12f, 1f, 1f
+            )
+        ),
     ) {
         val parsedPosition = LatLng(weatherVM.weatherLat, weatherVM.weatherLon)
         Marker(
@@ -492,6 +525,7 @@ fun ShowMap(modifier : Modifier, weatherVM: WeatherViewModel, addressVM: Geocodi
 }
 
 // dialog
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LoadingDialog(
@@ -499,16 +533,15 @@ private fun LoadingDialog(
     progressIndicatorColor: Color = Color(0xFF35898f),
     progressIndicatorSize: Dp = 80.dp
 ) {
-    val viewModel: LoadingViewModel = viewModel()
 
-    val showDialog by viewModel.open.observeAsState(initial = true) // initially, don't show the dialog
+    val showDialog by mutableStateOf(true)
 
     if (showDialog) {
         AlertDialog(
             onDismissRequest = {
             },
             properties = DialogProperties(
-                usePlatformDefaultWidth = false // disable the default size so that we can customize it
+                usePlatformDefaultWidth = false
             )
         ) {
             Column(
@@ -525,10 +558,8 @@ private fun LoadingDialog(
                     progressIndicatorColor = progressIndicatorColor
                 )
 
-                // Gap between progress indicator and text
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Please wait text
                 Text(
                     text = "Please wait...",
                     style = TextStyle(
@@ -542,6 +573,7 @@ private fun LoadingDialog(
     }
 
 }
+
 @Composable
 private fun ProgressIndicatorLoading(
     progressIndicatorSize: Dp,
@@ -554,7 +586,7 @@ private fun ProgressIndicatorLoading(
         targetValue = 360f,
         animationSpec = infiniteRepeatable(
             animation = keyframes {
-                durationMillis = 600 // animation duration
+                durationMillis = 600
             }
         ), label = ""
     )
@@ -580,24 +612,3 @@ private fun ProgressIndicatorLoading(
     )
 
 }
-
-class LoadingViewModel : ViewModel() {
-    var open = MutableLiveData<Boolean>()
-
-    fun startThread() {
-        viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                // Do the background work here
-                // I'm adding the delay
-                delay(3000)
-            }
-
-            closeDialog()
-        }
-    }
-
-    private fun closeDialog() {
-        open.value = false
-    }
-}
-
